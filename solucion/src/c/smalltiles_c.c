@@ -5,6 +5,8 @@ void smalltiles(unsigned char *src, unsigned char *dst, int h, int w, int row_si
 void smalltiles_c (unsigned char *src, unsigned char *dst, int h, int w, int src_row_size, int dst_row_size) {
     int ih;
     int idh;
+    w = (w%2) ? w-1 : w;
+    h = (h%2) ? h-1 : h;
     for (ih = idh = 0; ih < h*src_row_size; ih += 2*src_row_size, idh += dst_row_size) {
         int iw;
         int idw;
@@ -15,5 +17,11 @@ void smalltiles_c (unsigned char *src, unsigned char *dst, int h, int w, int src
 }
 
 void smalltiles(unsigned char *src, unsigned char *dst, int h, int w, int row_size) {
-    *(int*)dst = *(int*)(dst+(2*w)) = *(int*)(dst+(row_size*h/2)) = *(int*)(dst+(2*w+row_size*h/2)) = ((int*)src)[0];
+    int i;
+    for (i = 0; i < 3; i++) {
+        dst[i] = src[i];
+        dst[2*w+i] = src[i];
+        dst[row_size*h/2 + 2*w + i] = src[i];
+        dst[row_size*h/2 + i] = src[i];
+    }
 }
