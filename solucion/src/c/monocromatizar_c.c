@@ -1,7 +1,7 @@
 #include<limits.h>
-#define ALFA 0.21
+#define ALFA 0.07
 #define BETA 0.71
-#define GAMA 0.07
+#define GAMA 0.21
 #define PIXEL_SIZE 4
 
 unsigned char saturar2(double c);
