@@ -11,12 +11,12 @@ void monocromatizar_c (unsigned char *src, unsigned char *dst, int h, int w, int
     for (ih = idh = 0; ih < h*src_row_size; ih += src_row_size, idh += dst_row_size) {
         int iw;
         for (iw = 0; iw < w*4; iw = iw+4) {
-            monocromatizar_c(&src[ih+iw], &dst[idh+iw]);
+            monocromatizar(&src[ih+iw], &dst[idh+iw]);
         }
     }
 }
 
-void rotar(unsigned char *src, unsigned char *dst) {
+void monocromatizar(unsigned char *src, unsigned char *dst) {
     unsigned char mono = ALFA * dst[2] + BETA * dst[1] + GAMA * dst[0];
     dst[0] = mono;
     dst[1] = mono;
