@@ -1,4 +1,3 @@
-#include <stdio.h>
 #define ALFA 0.21
 #define BETA 0.71
 #define GAMA 0.07
@@ -22,7 +21,7 @@ void monocromatizar_c (unsigned char *src, unsigned char *dst, int h, int w, int
     }
 }
 
-void monocromatizar(unsigned char *src, unsigned char *dst) {
+inline void monocromatizar(unsigned char *src, unsigned char *dst) {
     unsigned char mono = ALFA * dst[2] + BETA * dst[1] + GAMA * dst[0];
     dst[0] = mono;
     dst[1] = mono;
