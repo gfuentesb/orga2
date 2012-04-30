@@ -91,12 +91,6 @@ smalltiles_asm:
     movq [rsi + r11], xmm0 ; cuarto cuadrante
     sub r11, r13
     movq [rsi + r11], xmm0 ; tercer cuadrante
-    sub r11, r12
-
-    shl r11, 1
-
-    add r11, 16
-
     jmp .return
 
 
