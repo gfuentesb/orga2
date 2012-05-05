@@ -3,4 +3,5 @@
 .*
 !.gitignore
 *.~
-
+tpcopados
+opencv_flann
