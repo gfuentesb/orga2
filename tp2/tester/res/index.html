@@ -1,0 +1,102 @@
+<!DOCTYPE html> 
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<script src="res/html5slider.js"></script>
+		<script src="res/ajax.js" ></script>
+		<script src="res/img.js" ></script>
+		<script src="res/floating-1.8.js" ></script>
+		<link rel="stylesheet" href="res/tester.css"> </link>
+		<link href='http://fonts.googleapis.com/css?family=Quicksand' rel='stylesheet' type='text/css'>
+		<script>
+		
+		 floatingMenu.add('outerwrapper',  
+        {  
+            // Represents distance from top or  
+            // bottom browser window border  
+            // depending upon property used.  
+            // Only one should be specified.  
+            targetTop: 10,  
+            // targetBottom: 0,  
+  
+            // prohibits movement on x-axis  
+            prohibitXMovement: true,  
+  
+            // Remove this one if you don't  
+            // want snap effect  
+            //snap: true  
+        });
+        floatingMenu.add('vsliderwrapper',  
+        {  
+            // Represents distance from top or  
+            // bottom browser window border  
+            // depending upon property used.  
+            // Only one should be specified.  
+            targetTop: 10,  
+            // targetBottom: 0,  
+  
+            // prohibits movement on x-axis  
+            prohibitXMovement: true,  
+  
+            // Remove this one if you don't  
+            // want snap effect  
+            //snap: true  
+        });
+        function start() {
+			if (navigator.userAgent.indexOf("Firefox")!=-1) {
+				var vsliderwrapper = document.getElementById("vsliderwrapper");
+				vsliderwrapper.style.marginTop = "200px";
+			}
+		}
+        </script>
+		
+		<title>TP2 - Orga2</title>
+	</head>
+	<body onload="start(); return ajax_post_url('reload', '', ajax_resp);" >
+		<div id=debug></div>
+		
+		<header>
+			
+			<div id=opciones>Lista de imágenes: <div id=selectores>cargando...</div><div id=loading></div></div>
+			<div id=titulo><h1>Tester de Imágenes - Orga 2</h1></div>
+		</header>
+	
+		<br />
+		<div id=clear></div>
+		<div id=content>
+			<div id=relleno></div><div class=slidertitle>Scrolls</div><div class=slidertitle>Zoom</div><div id=clear></div>
+			<div id=relleno></div>
+			<div id=outerwrapper><div id=hsliderwrapper>
+				<input id=hslider type=range min=-100 max=100 value=0 step=1 onchange="moveH(this.value);"/><input id=zslider type=range min=-10 max=100 value=1 step=1 onchange="zoom(this.value);"/>
+				</div></div>
+			<div id=vsliderwrapper><input id=vslider type=range min=-100 max=100 value=0 step=1 onchange="moveV(this.value);"/></div>
+			<div id=tablewrapper>
+				<table id=imagenes class=imagenes>
+				<tbody>
+					<tr class=imagenes><td id=imagen11 class=imagenes><div class=imagen><canvas id=imagen1 class=imagen></canvas></div></td><td id=imagen12 class=imagenes><div class=imagen><canvas id=imagen2 class=imagen></canvas></div></td></tr>
+					<tr class=imagenes><td id=imagen21 class=imagenes><canvas id=imagen3 class=imagen></canvas></td><td id=imagen22 class=imagenes><canvas id=imagen4 class=imagen></canvas></td></tr>
+				</tbody>
+				</table>
+			</div>
+		</div>
+		<div id=sidebar>
+			<div id=logwrapper>
+				<h3>Log:</h3>
+				<div id=prelog></div>
+				<div id=log></div>
+				<div id=postlog></div>
+			</div>
+			<div id=leyenda>
+				<h3>Leyenda:</h3>
+				<table>
+					<tr><td>Original</td><td>Cátedra</td></tr>
+					<tr><td>C</td><td>ASM</td></tr>
+				</table>
+			</div>
+		</div>
+		<footer>
+			<div id=errors></div>
+			<div class=footer><p class=footer>OC2</p></div>
+		</footer>
+	</body>
+</html>
