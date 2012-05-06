@@ -31,7 +31,7 @@ inline void monocromatizar(unsigned char *src, unsigned char *dst) {
     dst[2] = mono;
 }
 
-unsigned char saturar2(double c) {
+inline unsigned char saturar2(double c) {
     if (c > UCHAR_MAX) {
         return UCHAR_MAX;
     }

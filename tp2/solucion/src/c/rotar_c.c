@@ -13,7 +13,7 @@ void rotar_c (unsigned char *src, unsigned char *dst, int h, int w, int src_row_
     }
 }
 
-void rotar(unsigned char *src, unsigned char *dst) {
+inline void rotar(unsigned char *src, unsigned char *dst) {
     dst[0] = src[1];
     dst[1] = src[2];
     dst[2] = src[0];

@@ -16,7 +16,7 @@ void smalltiles_c (unsigned char *src, unsigned char *dst, int h, int w, int src
     }
 }
 
-void smalltiles(unsigned char *src, unsigned char *dst, int h, int w, int row_size) {
+inline void smalltiles(unsigned char *src, unsigned char *dst, int h, int w, int row_size) {
     int i;
     for (i = 0; i < 3; i++) {
         dst[i] = src[i];

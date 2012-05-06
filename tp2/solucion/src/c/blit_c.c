@@ -33,7 +33,7 @@ int bw, int b_row_size) {
 	}
 }
 
-static int esmagenta(unsigned char *pix){
+inline static int esmagenta(unsigned char *pix){
 	if(pix[0] == 255 && pix[1] == 0 && pix[2] == 255){
 		return 1;
 	} else {

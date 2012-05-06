@@ -35,7 +35,7 @@ inline void sepia(unsigned char *src, unsigned char *dst) {
     dst[2] = saturar3(tmp * RED);
 }
 
-unsigned char saturar3(int c) {
+inline unsigned char saturar3(int c) {
     if (c > UCHAR_MAX) {
         return UCHAR_MAX;
     }
