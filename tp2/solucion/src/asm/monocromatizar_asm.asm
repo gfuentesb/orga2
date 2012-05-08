@@ -25,19 +25,19 @@ monocromatizar_asm:
     pxor xmm1, xmm1
 .loop:
             movdqa xmm2, [rdi + r11]  ; Muevo 16 bytes alineados y aplico la mascara para rotarlos
-            mov xmm4, xmm2
+            movdqa xmm4, xmm2
             punpckhbw xmm2, xmm1
             punpcklbw xmm4, xmm1
-            mov xmm3, xmm2
-            mov xmm5, xmm4
+            movdqa xmm3, xmm2
+            movdqa xmm5, xmm4
             punpckhwd xmm2, xmm1
             punpcklwd xmm3, xmm1
             punpckhwd xmm4, xmm1
             punpcklwd xmm5, xmm1
-            vtpi2ps xmm2, xmm2
-            vtpi2ps xmm3, xmm3
-            vtpi2ps xmm4, xmm4
-            vtpi2ps xmm5, xmm5
+            cvtdq2ps xmm2, xmm2
+            cvtdq2ps xmm3, xmm3
+            cvtdq2ps xmm4, xmm4
+            cvtdq2ps xmm5, xmm5
             mulps xmm2, xmm0
             mulps xmm3, xmm0
             mulps xmm4, xmm0
@@ -45,7 +45,7 @@ monocromatizar_asm:
             haddps xmm2, xmm3
             haddps xmm4, xmm5
             haddps xmm2, xmm4
-            vtps2pi xmm2, xmm2 
+            cvtps2dq xmm2, xmm2 
             pshufb xmm2, xmm6
             movdqa [rsi + r11], xmm2
             add r11, 16
@@ -60,5 +60,7 @@ monocromatizar_asm:
         xor r11, r11
         add rsi, r9
         add rdi, r8
-        loop .loop
+	dec rcx
+	cmp rcx, 0
+      jne .loop
 	ret
