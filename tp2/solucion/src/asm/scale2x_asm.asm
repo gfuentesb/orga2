@@ -28,6 +28,13 @@ scale2x_asm:
     push rbp
     mov rbp, rsp
 
+    push r15
+    push r14
+    push r13
+    push r12
+    push rbx
+    push r12
+
     mov src, rdi
     mov dst, rsi
     mov h, rdx
@@ -113,8 +120,12 @@ scale2x_asm:
     cmp rcx, 0
     jne .copio_fila
 
-    
-
+    pop r12
+    pop rbx
+    pop r12
+    pop r13
+    pop r14
+    pop r15
 
     pop rbp
 	ret
