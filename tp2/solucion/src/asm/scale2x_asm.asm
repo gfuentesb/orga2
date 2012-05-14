@@ -19,9 +19,9 @@ global scale2x_asm
 %define dst_rs r11
 %define src_rs r10
 
-%define magic_mask 0x90
-%define magic_mask_1 0xA9
-%define magic_mask_2 0xD8
+%define magic_mask 0x50 ;01010000  ABCD -> AABB
+%define magic_mask_1 0xA5 ; 10100101 ABCD -> BBCC
+%define magic_mask_2 0xD8 ; 11011000 ABCD -> ACBD
 
 scale2x_asm:
 ;COMPLETAR
@@ -42,7 +42,10 @@ scale2x_asm:
     mov src_rs, r8
     mov dst_rs, r9
 
-    mov rcx, 128
+    mov rcx, h
+    shr rcx, 1
+
+    shl w, 1
 
 .copio_fila:
 
@@ -68,36 +71,37 @@ scale2x_asm:
         pcmpeqd xmm6, xmm2
 
         ;Hacemos D == F || B == H
-        psrldq xmm6, 8
+        psrldq xmm6, 4
         por xmm7, xmm6
         pshufd xmm7, xmm7, magic_mask
 
         movdqa xmm6, xmm1
         movdqa xmm3, xmm1
 
-        pshufd xmm0, xmm0, magic_mask_1
-        pshufd xmm2, xmm2, magic_mask_1
-        pshufd xmm6, xmm6, magic_mask_1
-        pshufd xmm3, xmm3, magic_mask_2
+        pshufd xmm0, xmm0, magic_mask_1 ;ABCD -> BBCC
+        pshufd xmm2, xmm2, magic_mask_1 ;GHIJ -> HHII
+        pshufd xmm3, xmm3, magic_mask_2 ;DEFK -> DFEK
+        pshufd xmm6, xmm6, magic_mask_1 ;DEFK -> EEFF Si sale mal queremos dejar este valor.
 
-        movdqa xmm4, xmm1
+        movdqa xmm4, xmm3
         pcmpeqd xmm4, xmm0
-        movdqa xmm5, xmm1
+        movdqa xmm5, xmm3
         pcmpeqd xmm5, xmm2
 
-        pandn xmm4, xmm7
-        pandn xmm5, xmm7
+        movdqa xmm2, xmm7
+        pandn xmm7, xmm4
+        pandn xmm2, xmm5
         
         movdqa xmm0, xmm3
         movdqa xmm1, xmm3
-        pand xmm0, xmm4
-        pandn xmm4, xmm6
         
-        paddusb xmm0, xmm4
+        pand xmm0, xmm7
+        pandn xmm7, xmm6
+        paddusb xmm0, xmm7
 
-        pand xmm1, xmm5
-        pandn xmm5, xmm6
-        paddusb xmm1, xmm5
+        pand xmm1, xmm2
+        pandn xmm2, xmm6
+        paddusb xmm1, xmm2
 
         movdqu [dst + rbx], xmm0
         add dst, dst_rs
@@ -107,7 +111,7 @@ scale2x_asm:
         sub dst, dst_rs
 
         add rax, 8
-        cmp rax, 512
+        cmp rax, w
 
         jne .copio_columna
 
