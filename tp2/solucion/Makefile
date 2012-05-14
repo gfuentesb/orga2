@@ -50,4 +50,4 @@ test:
 clean:
 	rm -rf $(MAIN)
 	rm -rf $(BIN)/*
-	
+	$(MAKE) -C ../tester/ clean	
