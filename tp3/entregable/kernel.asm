@@ -55,11 +55,12 @@ extern inicializar_idt
 extern resetear_pic
 extern habilitar_pic
 
+extern chequear_A20
+extern clean_screen
+
 ; PUNTO DE ENTRADA DEL KERNEL
 start:
 		cli ;pues que no me interrumpan por ahora
-
-		xchg bx, bx ; esta instruccion hace un magic breakpoint
 
 		jmp bienvenida
 
@@ -70,7 +71,37 @@ bienvenida:
 		IMPRIMIR_MODO_REAL iniciando, iniciando_len, 0x07, 0, 0
 
 		; /* COMPLETAR */
+        call checkear_A20
+        cmp eax, 0
+        je A20_habilitada
 
+        call habilitar_A20
+
+A20_habilitada:
+        lgdt [GDT_DESC]
+
+        mov eax, cr0
+        or eax, 1
+        mov cr0, eax
+
+        jmp 0x30:modo_protegido
+
+BITS 32
+modo_protegido:
+        ;seteamos los registros ES, DS, SS, FS como datos
+        mov ax, 0x20
+        mov ds, ax
+        mov es, ax
+        mov ss, ax
+        mov fs, ax
+        ;seteamos la pila a 0x20000
+        mov ebp, 0x20000
+        mov esp, 0x20000
+        ;Seteamos el segmento de video
+        mov ax, 0x10
+        mov gs, ax
+
+        call clean_screen
 		jmp $
 
 %include "a20.asm"
