@@ -7,13 +7,28 @@
 #define BUFFERS_END 25
 #define BUFFER_SIZE 38
 
+#define COLOR_BLACK 0
+#define COLOR_BLUE 1
+#define COLOR_GREEN 2
+#define COLOR_CYAN 3
+#define COLOR_RED 4
+#define COLOR_MAGENTA 5
+#define COLOR_BROWN 6
+#define COLOR_GRAY 7
+/* COLOR_L* are 4bits colors */
+#define COLOR_LBLUE 8 + COLOR_BLUE
+#define COLOR_LGREEN 8 + COLOR_GREEN
+#define COLOR_LCYAN 8 + COLOR_CYAN
+#define COLOR_LRED 8 + COLOR_RED
+#define COLOR_LMAGENTA 8 + COLOR_MAGENTA
+#define COLOR_LBROWN 8 + COLOR_BROWN
+#define COLOR_LWHITE 8 + COLOR_GRAY
 
 void clean_screen() {
-    //TODO: Define colors.
     v_char ch = {
                     .ch = '\0',
-                    .bg_color = 0x7,
-                    .fg_color = 0xF,
+                    .bg_color = COLOR_GRAY,
+                    .fg_color = COLOR_GRAY,
                     .blink = 0
                 };
 
@@ -27,25 +42,25 @@ void clean_screen() {
     }
 
     for (i = BUFFERS_START; i < BUFFERS_END; i++) {
-        ch.bg_color = 0x1;
+        ch.bg_color = COLOR_BLUE;
         ch.ch = '\0';
         for (j = 0; j < BUFFER_SIZE; j++) {
             print_char(ch, i, j + 2);
             print_char(ch, i, j + BUFFER_SIZE + 4);
         }
-        ch.bg_color = 0x4;
+        ch.bg_color = COLOR_RED;
         print_char(ch, i, 0);
         print_char(ch, i, BUFFER_SIZE + 2);
 
-        ch.bg_color = 0x7;
-        ch.fg_color = 0x0;
+        ch.bg_color = COLOR_GRAY;
+        ch.fg_color = COLOR_BLACK;
         ch.ch = i + '0' - BUFFERS_START;
         print_char(ch, i, 1);
         ch.ch = ch.ch + 4;
         print_char(ch, i, 1 + BUFFER_SIZE + 2);
     }
-    ch.bg_color = 0x4;
-    ch.fg_color = 0x0;
+    ch.bg_color = COLOR_RED;
+    ch.fg_color = COLOR_BLACK;
     ch.ch = '\0';
 
     for (j = 0; j < SCREEN_WIDTH; j++) {
