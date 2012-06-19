@@ -478,7 +478,7 @@ destino y obtenemos el resultado buscado.
 Implementación en |-| `-. |\/| :
                   ` ' `-' '  ` 
 
-    Como tenemos que hacer operaciones aritéticas no enteras necesitamos tener cada número en
+    Como tenemos que hacer operaciones aritméticas no enteras necesitamos tener cada número en
 formato float para lo cual primero lo desempaquetamos de 8 a 32 bits, quedando los 4 pixels en
 4 registros distintos. Y luego convertimos de enteros de 32bits a escalares de presición
 simple, que también ocupan 32 bits. En ese momento procedemos a multiplicar por las constantes.
