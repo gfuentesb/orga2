@@ -67,3 +67,41 @@ void clean_screen() {
         print_char(ch, SCREEN_HEIGHT - 1, j);
     }
 }
+
+void black_screen() {
+    v_char ch = {
+                    .ch = 0,
+                    .bg_color = COLOR_BLACK,
+                    .fg_color = COLOR_BLACK,
+                    .blink = 0
+                };
+    int i, j;
+    for (i = 0; i < SCREEN_HEIGHT; i++) {
+        for (j = 0; j < SCREEN_WIDTH; j++) {
+            print_char(ch, i, j);
+        }
+    }
+}
+
+void print_registers(int cr0, int cr2, int cr3, int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp, int esp) {
+    int i = 0;
+    v_char ch = {
+                    .ch = 0,
+                    .bg_color = COLOR_BLACK,
+                    .fg_color = COLOR_LWHITE,
+                    .blink = 0
+                };
+    ch.ch = '0' + eax;
+    print_char(ch, 0, i++);
+    ch.ch = '0' + ebx;
+    print_char(ch, 0, i++);
+    ch.ch = '0' + ecx;
+    print_char(ch, 0, i++);
+    ch.ch = '0' + edx;
+    print_char(ch, 0, i++);
+    ch.ch = '0' + esi;
+    print_char(ch, 0, i++);
+    ch.ch = '0' + edi;
+    print_char(ch, 0, i++);
+
+}
