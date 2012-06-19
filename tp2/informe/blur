@@ -1,13 +1,28 @@
-Desenfocar es sin lugar a dudas uno de los principales y más usados filtros para aplicar sobre imágenes. ¿De qué otra forma podríamos evitar que ese amigo feo que tenemos sea tan llamativo en una fotografía? Es por ello que en este trabajo práctico debemos realizar este filtro. El que se exija realizar una implementación eficiente utilizando SIMD para poder aplicar el filtro reiteradas veces, es algo que, por algún motivo que desconocemos, les era de particular interés a los profesores. ¿Será que sus amig... Mejor centrémonos.
-El filtro consiste en mezclar los píxeles cercanos para dar un efecto de desenfoque. Precisando, un píxel dado se calcula obteniendo el promedio de los 13 píxeles que distan menos de tres en la norma Manhattan. El promedio se calcula canal a canal.
+                                                                88""Yb 88     88   88 88""Yb 
+                                                                88__dP 88     88   88 88__dP 
+                                                                88""Yb 88  .o Y8   8P 88"Yb  
+                                                                88oodP 88ood8 `YbodP' 88  Yb 
+
+
+
+    Desenfocar es sin lugar a dudas uno de los principales y más usados filtros para aplicar sobre 
+imágenes. ¿De qué otra forma podríamos evitar que ese amigo feo que tenemos sea tan llamativo 
+en una fotografía? Es por ello que en este trabajo práctico debemos realizar este filtro. 
+El que se exija realizar una implementación eficiente utilizando SIMD para poder aplicar el 
+filtro reiteradas veces, es algo que, por algún motivo que desconocemos, les era de particular 
+interés a los profesores. ¿Será que sus amig... Mejor centrémonos. El filtro consiste en 
+mezclar los píxeles cercanos para dar un efecto de desenfoque. Precisando, un píxel dado se 
+calcula obteniendo el promedio de los 13 píxeles que distan menos de tres en la norma 
+Manhattan. El promedio se calcula canal a canal.
 
 
                   .-. .-. .  . 
 Implementación en |-| `-. |\/| :
                   ` ' `-' '  ` 
 
-Para aprovechar mejor las instrucciones SSE es importante observar con detalle el filtro que se necesita implementar.
-Como procesaremos 4 píxeles a vez, es bueno ver bien qué píxeles entran en juego y qué rol cumplen. Un gráfico nos ayudará a aclarar esta cuestión:
+    Para aprovechar mejor las instrucciones SSE es importante observar con detalle el filtro 
+que se necesita implementar. Como procesaremos 4 píxeles a vez, es bueno ver bien qué píxeles 
+entran en juego y qué rol cumplen. Un gráfico nos ayudará a aclarar esta cuestión:
 
       +-+-+-+-+          +-+-+-+-+          +-+-+-+-+          +-+-+-+-+          +-+-+-+-+    
       | | | | |          |*| | | |          | |*| | |          | | |*| |          | | | |*|    
@@ -21,9 +36,12 @@ Como procesaremos 4 píxeles a vez, es bueno ver bien qué píxeles entran en ju
       | | | | |          |*| | | |          | |*| | |          | | |*| |          | | | |*|    
       +-+-+-+-+          +-+-+-+-+          +-+-+-+-+          +-+-+-+-+          +-+-+-+-+    
 
-En la primera imagen vemos los píxeles que deseamos procesar y todos los píxeles que se involucran. En las siguientes imágenes vemos píxel a píxel de los que deseamos procesar, cuáles son los píxeles involucrados. Todos se promedian de la misma manera, por lo que podríamos decir que juegan el mismo rol.
+    En la primera imagen vemos los píxeles que deseamos procesar y todos los píxeles que se 
+involucran. En las siguientes imágenes vemos píxel a píxel de los que deseamos procesar, 
+cuáles son los píxeles involucrados. Todos se promedian de la misma manera, por lo que 
+podríamos decir que juegan el mismo rol.
 
-Para guardar estos píxles en memoria, decidimos acomodarlos de la sigueinte manera:
+    Para guardar estos píxles en memoria, decidimos acomodarlos de la sigueinte manera:
       +-+-+-+-+    
       | xmm0  |    
   +-+-+-+-+-+-+-+-+  
@@ -36,36 +54,57 @@ Para guardar estos píxles en memoria, decidimos acomodarlos de la sigueinte man
       | xmm7  |    
       +-+-+-+-+    
 
-Donde A y B se encuentran en una mitad de xmm3, C y D en la otra de xmm4, y además xmm1, xmm2, xmm5 y xmm6 cada uno posee un pixel que no nos sirve.
+    Donde A y B se encuentran en una mitad de xmm3, C y D en la otra de xmm4, y además 
+xmm1, xmm2, xmm5 y xmm6 cada uno posee un pixel que no nos sirve.
 
-Lo interesante del asunto es que las dos primeras filas juegan exactamente el mismo rol que las dos últimas. Ignorando el posible overflow, hay que ejecutar exactamente las mismas instrucciones para procesar lo correspondiente a xmm1, xmm5 o xmm1+xmm5 (donde el + representa la suma componente a componente). El tema del overflow se soluciona un unpack de byte a word.
-Por otro lado, xmm2 se procesa de fora simétrica a xmm1 y xmm4 se procesa de forma simétrica a xmm3. Por lo que hay sólo tres tipos de procesados que son únicos. El resto son formas distintas de aplicar esto. Más aún, antes de procesar xmm1, nos encargamos de desempaquetarlo y le sumamos xmm5 desempaquetado, procesando ambos registros de una sola vez. Un hecho extra interesante es que también le sumamos xmm3, dejando sólo una parte de xmm3 sin procesar que, como veremos, resulta muy sencilla de procesar. De forma completamente simétrica procesamos xmm2 + xmm4 + xmm6.
+    Lo interesante del asunto es que las dos primeras filas juegan exactamente el mismo rol que 
+las dos últimas. Ignorando el posible overflow, hay que ejecutar exactamente las mismas 
+instrucciones para procesar lo correspondiente a xmm1, xmm5 o xmm1+xmm5 (donde el + representa 
+la suma componente a componente). El tema del overflow se soluciona un unpack de byte a word.
+Por otro lado, xmm2 se procesa de fora simétrica a xmm1 y xmm4 se procesa de forma simétrica 
+a xmm3. Por lo que hay sólo tres tipos de procesados que son únicos. El resto son formas 
+distintas de aplicar esto. Más aún, antes de procesar xmm1, nos encargamos de desempaquetarlo 
+y le sumamos xmm5 desempaquetado, procesando ambos registros de una sola vez. Un hecho extra 
+interesante es que también le sumamos xmm3, dejando sólo una parte de xmm3 sin procesar que, 
+como veremos, resulta muy sencilla de procesar. De forma completamente simétrica procesamos 
+xmm2 + xmm4 + xmm6.
 
-Después de tanta cháchara pasemos a explicar cómo hacemos esto. Para el procesamiento de píxeles, nosotros tendremos dos registros xmm14 y xmm15 donde iremos guardando las sumas de todos los píxeles que correspondan. En xmm14 estarán los valores correspondientes a A y B y en xmm15 los correspondientes a C y D. Una vez sumado todo lo correspondiente, se pasa a dividir por 13 cada componente, siendo lo que quede el resultado correspondiente a cada pixel.
+    Después de tanta cháchara pasemos a explicar cómo hacemos esto. Para el procesamiento de 
+píxeles, nosotros tendremos dos registros xmm14 y xmm15 donde iremos guardando las sumas de 
+todos los píxeles que correspondan. En xmm14 estarán los valores correspondientes a A y B y 
+en xmm15 los correspondientes a C y D. Una vez sumado todo lo correspondiente, se pasa a 
+dividir por 13 cada componente, siendo lo que quede el resultado correspondiente a cada pixel.
 
-Centrémonos en xmm1:
-     +-+-+-+-+    
-     | | | | |    
- +-+-+-+-+-+-+-+  
- | |X|Y|Z| | | |  
- +-+-+-+-+-+-+-+-+
- | | |A|B|C|D| | |
- +-+-+-+-+-+-+-+-+
-   | |E|F| | | |  
-   +-+-+-+-+-+-+  
-     | | | | |    
-     +-+-+-+-+    
+                                        Centrémonos en xmm1:
+                                             +-+-+-+-+    
+                                             | | | | |    
+                                         +-+-+-+-+-+-+-+  
+                                         | |X|Y|Z| | | |  
+                                         +-+-+-+-+-+-+-+-+
+                                         | | |A|B|C|D| | |
+                                         +-+-+-+-+-+-+-+-+
+                                           | |E|F| | | |  
+                                           +-+-+-+-+-+-+  
+                                             | | | | |    
+                                             +-+-+-+-+    
 
-Lo que nosotros sabemos es que X, Y y Z influyen en el resultado de A, Y, Z en el de B y Z sólo en el de C. Como todo tiene el mismo rol, sumar antes de sacarse el promedio, por influir nos referimos a que van a ser sumados en la parte correspondiente de los registros xmm14 y xmm15
-Para notar el procesamiento paralelo en esto, lo que nosotros hacemos es lo siguiente:
-    * Sumamos X a A
-    * Sumamos al mismo tiempo Y y Z a A y B respectivamente
-    * Invertimos las posiciones de Y y Z
-    * Sumamos Z e Y a A y B respectivamente
-    * Limpiamos Y dejando sólo a Z donde se encontraba
-    * Sumamos Z a C
-En este último texto por A, B y C nos referimos a las posiciones correctas de xmm14 y xmm15 que contienen los resultados temporales que irán a parar a las posiciones de A, B y C.
-Sólo por esta funciones mostraremos el snippet del código de asm para dejar en claro cómo es el procesado. Las otras otras partes no diferirán demasiado y por lo tanto llegado el momento las obviaremos:
+    Lo que nosotros sabemos es que X, Y y Z influyen en el resultado de A, Y, Z en el de B y Z 
+sólo en el de C. Como todo tiene el mismo rol, sumar antes de sacarse el promedio, por influir 
+nos referimos a que van a ser sumados en la parte correspondiente de los registros 
+xmm14 y xmm15
+    Para notar el procesamiento paralelo en esto, lo que nosotros hacemos es lo siguiente:
+        * Sumamos X a A
+        * Sumamos al mismo tiempo Y y Z a A y B respectivamente
+        * Invertimos las posiciones de Y y Z
+        * Sumamos Z e Y a A y B respectivamente
+        * Limpiamos Y dejando sólo a Z donde se encontraba
+        * Sumamos Z a C
+    En este último texto por A, B y C nos referimos a las posiciones correctas de xmm14 y xmm15
+ que contienen los resultados temporales que irán a parar a las posiciones de A, B y C.
+
+    Sólo por esta funciones mostraremos el snippet del código de asm para dejar en claro cómo 
+es el procesado. Las otras otras partes no diferirán demasiado y por lo tanto llegado el 
+momento las obviaremos:
 
         movdqa xmm8, xmm1          
         punpckhbw xmm8, xmm13            ;xmm8 = Y      , Z
@@ -83,8 +122,15 @@ Sólo por esta funciones mostraremos el snippet del código de asm para dejar en
         psrldq xmm8, 8                   ;xmm8 = Z + B + F, 0
         paddusw xmm15, xmm8              ;xmm15+= Z + B + F, 0
 
-Donde en el registro xmm8 se ponen las sumas de la parte alta xmm1, xmm3 y xmm5 (Y + A + E en una componente y Z + B + F en la otra) invertmask es una máscara que cambia de lugar los quadwords de xmm8, las instrucciones pslldq y pslrdq se utilizand para limpiar la mitad del registro xmm8 y xmm13 contiene todos ceros. La instrucción paddusw xmm15, xmm9 que está colgadísima en este lugar nos simplifica la vida a la hora de procesar lo que nos fata de xmm1, que luego veremos cuándo sucede.
-Oh, sí, como decía mi abuelo: nada más claro que assembly para entender cómo funciona un programa.
+    Donde en el registro xmm8 se ponen las sumas de la parte alta xmm1, xmm3 y xmm5 
+(Y + A + E en una componente y Z + B + F en la otra) invertmask es una máscara que cambia de 
+lugar los quadwords de xmm8, las instrucciones pslldq y pslrdq se utilizand para limpiar la 
+mitad del registro xmm8 y xmm13 contiene todos ceros. La instrucción paddusw xmm15, xmm9 que
+ está colgadísima en este lugar nos simplifica la vida a la hora de procesar lo que nos fata 
+de xmm1, que luego veremos cuándo sucede.
+
+Oh, sí, como decía mi abuelo: nada más claro que assembly para entender cómo funciona un 
+programa.
 
 Las dos formas restantes de procesar son bastante más sencillas:
      +-+-+-+-+          +-+-+-+-+     
@@ -98,8 +144,17 @@ Las dos formas restantes de procesar son bastante más sencillas:
    +-+-+-+-+-+-+      +-+-+-+-+-+-+   
      | | | | |          | | | | |     
      +-+-+-+-+          +-+-+-+-+     
-Si hasta acá el proceso pudo ser comprendido, entonces se puede ver que para procesar xmm0 y xmm7 basta sumarlos directamente sobre el resultado (sumándose X en A e Y en B, más los respectivos valores de xmm7) y para procesar xmm3 y xmm4, hay que sumar X y Z en A e Y y W en B. También falta la parte completamente simétrica de xmm2, xmm4 y xmm6, pero por tal simetría nos ahorraremos las explicaciones. Basta con observar que tanto para A como para B, cada uno de los píxeles que se necesitaban fueron sumados, salvo uno de B (pero sumamos dos de C que al momento del procesamiento simétrico se corresponderá con los faltantes en B).
-De este modo, en xmm14 y xmm15 tenemos las sumas correspondientes a los píxeles A, B, C y D canal a canal. Lo restante es desempaquetar una vez más, convertir a floating points, dividir por trece, reempaquetar todo y pasarlo a dst.
+
+    Si hasta acá el proceso pudo ser comprendido, entonces se puede ver que para procesar 
+xmm0 y xmm7 basta sumarlos directamente sobre el resultado (sumándose X en A e Y en B, más los 
+respectivos valores de xmm7) y para procesar xmm3 y xmm4, hay que sumar X y Z en A e Y y 
+W en B. También falta la parte completamente simétrica de xmm2, xmm4 y xmm6, pero por tal 
+simetría nos ahorraremos las explicaciones. Basta con observar que tanto para A como para B, 
+cada uno de los píxeles que se necesitaban fueron sumados, salvo uno de B (pero sumamos dos 
+de C que al momento del procesamiento simétrico se corresponderá con los faltantes en B).
+De este modo, en xmm14 y xmm15 tenemos las sumas correspondientes a los píxeles A, B, C y D 
+canal a canal. Lo restante es desempaquetar una vez más, convertir a floating points, dividir 
+por trece, reempaquetar todo y pasarlo a dst.
 
 
 
@@ -107,4 +162,6 @@ De este modo, en xmm14 y xmm15 tenemos las sumas correspondientes a los píxeles
 Implementación en |   :
                   `-' 
 
-La implementación es C es bastante straightfoward. En consecuencia no la explicaremos.
+La implementación es C es bastante straightfoward. No difiere mucho con las otras funciones,
+se procesa píxel por píxel, recorriendo fila por fila y columna por columna, haciendo la 
+cuentita para cada píxel. 

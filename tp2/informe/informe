@@ -990,4 +990,6 @@ píxel 2.
                      |    F'     |     D'    |     F     |     D     |
                      +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
-    Con esto obtenemos la máscara para saber si en el resultado tiene que ir, la D o la E, usando pand y pandn, con paddusb obtenemos el valor que corresponda para cada píxel. Notar que hacer esto mismo para la fila inferior es análogo.                    
+    Con esto obtenemos la máscara para saber si en el resultado tiene que ir, la D o la E, 
+usando pand y pandn, con paddusb obtenemos el valor que corresponda para cada píxel. Notar que
+ hacer esto mismo para la fila inferior es análogo.
