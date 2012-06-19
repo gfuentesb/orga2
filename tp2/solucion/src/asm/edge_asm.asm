@@ -48,11 +48,11 @@ edge_asm:
     
     mov rax, w
     xor remainding, remainding
-    mov r9, 16
+    mov r9, 8
     idiv r9
 
     mov r8, rax
-    imul r8, 16
+    imul r8, 8
     add src, src_rs
     add dst, dst_rs
     add dst, 1
@@ -123,13 +123,13 @@ edge_asm:
             packuswb xmm0, xmm1
 
             sub src, src_rs
-            movdqu [dst + rax], xmm0
+            movq [dst + rax], xmm0
             add rax, 8
             cmp rax, r8
             jne .copia_columnas 
 
         ;pixels sobrantes
-        sub rax, 16
+        sub rax, 8
         add rax, remainding
         sub src, src_rs
         movdqu xmm0, [src + rax]
