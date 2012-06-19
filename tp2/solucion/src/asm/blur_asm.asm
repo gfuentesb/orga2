@@ -42,7 +42,7 @@ blur_asm:
     sub w, 16
     sub h, 2
 
-    xor rcx, rcx
+    mov rcx, 2
 
     add src, src_rs
     add src, src_rs
