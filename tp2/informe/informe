@@ -1205,20 +1205,30 @@ sepia          c      ciclos: 2708022848   ciclos por llamada: 67700568.000
 smalltiles     asm    ciclos: 127812784    ciclos por llamada: 3195319.500
 smalltiles     c      ciclos: 2171503312   ciclos por llamada: 54287584.000
 
-Como se puede observar en este caso en particular, las implementaciones en asm para esta 
+    Como se puede observar en este caso en particular, las implementaciones en asm para esta 
 imagen fueron significativamente más eficientes. Salvo blit que por tener poca lógica y 
 tener que competir contra memcpy muchas posibilidades de arrasar no tenía, todos los otros 
 filtros han sido por lo menos casi 10 veces más rápidos. Destacando el casi de scale2x que 
 fue 36 veces más rápido en asm que en C.
 
-Pero lo importante no es observar que nuestras implementaciones han tenido la destacada 
+    Pero lo importante no es observar que nuestras implementaciones han tenido la destacada 
 peculiaridad de ser más eficientes cuando las hicimos en ASM que cuando las hicimos en C. 
 La moraleja que hay que destacar está más relacionada con los motivos que no sólo hicieron 
 que esto sucediera de esta manera, sino que hasta sugerían previamente que un resultado 
 semejante a este se puede realizar.
-El quid de la cuestión se haya en el uso de las funciones SSE. Este set de instrucciones 
+    El quid de la cuestión se haya en el uso de las funciones SSE. Este set de instrucciones 
 le permitieron a las funciones en ASM operar con mucho mayor volumen de datos en la misma 
 cantidad de operaciones. Las operaciones SSE no sólo permitieron calcular varios píxeles en 
 cada iteración de los ciclos que conformaban los filtros, sino que incluso permitían operar 
 sobre varios canales a la vez. Mientras que desde el código de C se tuvo que trabajar píxel 
 a píxel y, en muchas ocasiones, canal a canal.
+
+
+ _____ _   _  _____    _   _ _____  _   __   __     ___   _   _  _______   __
+|_   _| | | ||  ___|   | | | |  __ \| |  \ \ / /    / _ \ | \ | ||  ___\ \ / /
+  | | | |_| || |__     | | | | |  \/| |   \ V /    / /_\ \|  \| || |__  \ V / 
+  | | |  _  ||  __|    | | | | | __ | |    \ /     |  _  || . ` ||  __| /   \ 
+  | | | | | || |___    | |_| | |_\ \| |____| |     | | | || |\  || |___/ /^\ \
+  \_/ \_| |_/\____/     \___/ \____/\_____/\_/     \_| |_/\_| \_/\____/\/   \/
+
+
