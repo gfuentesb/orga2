@@ -38,8 +38,8 @@ ______                               _ _
                                                         88"Yb  Yb   dP   88    dP__Yb  88"Yb  
                                                         88  Yb  YbodP    88   dP""""Yb 88  Yb 
 
-    El filtro rotar consiste en rotar los canales RGB de una imagen, de la siguiente manera:
-
+    El filtro rotar (o feel like Hulk) consiste en rotar los canales RGB de una imagen de la 
+siguiente manera:
                         +----------+----------+----------+
                         |  88""Yb  |  dP""b8  |  88""Yb  |
                         |  88__dP  | dP   `"  |  88__dP  |
@@ -132,7 +132,7 @@ Marquez, Somodi, Vanotti                   |                      Organización 
                          8bodP' 88 YY 88 dP""""Yb 88ood8 88ood8   88   88 88ood8 888888 8bodP' 
 
     Aplicar este filtro no es más que replicar la imagen original 4 veces sobre el destino de 
-forma escalada. 
+forma escalada. Básicamente sirve para ahorrarse unos mangos al necesitar fotos 4x4.
 
     +--------------------------------------+     +--------------------------------------+
     |                                      |     |                  |                   |
@@ -449,8 +449,8 @@ Marquez, Somodi, Vanotti                   |                      Organización 
 	El filtro monochrome permite lograr el un curioso efecto vintage, dando la apariencia de 
 tratarse de fotografías antiguas. Para lograr dicho efecto basta con multiplicar cada canal por
 una constante predefinida para el mismo, sumar los resultados y replicar dicho valor en los
-tres canales.
-
+tres canales. Digamos que es el retro de lo digital. Junto con sepia. Nada de cámara blanco y
+negro para seguir la old-fashion. No, no, dame la PC que me hago el antiguo, dicen acá.
 +----------+               +----------+              +----------+              +----------+
 |  88""Yb  |               |  88""Yb  |              |  dP""b8  |              |  88""Yb  |
 |  88__dP  |88888       __ |  88__dP  |  ·     __    | dP   `"  |  ·     _     |  88__dP  |
@@ -559,9 +559,9 @@ hemos recurrido al método provisto por la cátedra. Se debían sumar los 3 cana
 y almacenar dicho resultado en los canales multiplicándolo por la constante correspondiente 
 al canal en cuestión. Estas eran 0.5 para el canal R, 0.3 para el canal G y 0.2 para el canal 
 B. De este modo se obtiene el característico tono ocre que antiguamente se utilizaba para
-preservar por maś tiempo una fotografía en papel evitando el deterioro.
-
-
+preservar por maś tiempo una fotografía en papel evitando el deterioro. Vale destacar que una
+fotografía a la que se le aplica esté filtro podrá ser conservada por un largo período si
+así se desea.
 -----------------------------------------------------------------------------------------------
                                          Hoja 0x9
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
