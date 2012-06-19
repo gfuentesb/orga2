@@ -625,10 +625,6 @@ en memoria.
                             punpck(l/h)bw + phaddw + punpck(l/h)wd + phaddd + cvtdq2ps
                                              |
                                              |
------------------------------------------------------------------------------------------------
-                                         Hoja 0xA
-Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
------------------------------------------------------------------------------------------------	
                                              |
                                              |
                                              |
@@ -888,6 +884,110 @@ lo provisto por la cátedra y al final de dicha elección se copian a la imagen 
 Implementación en |-| `-. |\/| :
                   ` ' `-' '  ` 
 
+    Para poder escalar cada píxel, necesitamos de sus adyacentes, por lo cual, cargando 4
+píxeles en un registro xmm, podremos escalar los dos del medio, resultando en 8 píxeles de la
+imágen destino. Cargamos las fila correspondiente al píxel, así como también la fila superior
+y la inferior. 
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ xmm0
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                               Vamos a escalar Pixel 1 y Pixel 2
 
 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |           |           |           |           | Fila superior
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |           |           |           |           | Fila Inferior
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
+    Luego Shifteamos para comparar el pixel 0 con el 2 y el 1 con el 3.
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |0x00000000 |0x00000000 |  Pixel 3  |  Pixel 2  | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+    Luego comparamos los píxeles correspondientes a 1 y 2 de la fila superior e inferior, y
+finalmente shifteamos estos resultados para poder compararlos con los obtenidos recién, 
+de esta forma, conseguimos tener el resultado de la condición impuesta en el enunciado 
+(B == H || D == F), teniendo para cada píxel el resultado correspondiente.
+
+    El resultado de esta máscada lo replicamos utilizando pshufd, de la siguiente forma
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |           |           |B'=H'oD'=F'|B=H o D=F  | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                                             |
+                                      pshufd_magic_mask
+                                             |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |B'=H'oD'=F'|B'=H'oD'=F'|B=H o D=F  |B=H o D=F  | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+    Luego comezamos a aplicar máscaras para reordenar los píxeles que tenemos de forma que nos 
+quede conveniente para procesar. Tanto en la fila superior, como en la inferior, reordenamos
+los píxeles de la siguiente forma, ya que sólo nos interesan los que están arriba y abajo de 
+cada píxel central. 
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                                             |
+                                        pshufd-magic-mask-1
+                                             |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 2  |  Pixel 2  |  Pixel 1  |  Pixel 1  | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+    A los píxeles de la fila central los reordenamos de la siguiente forma
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                                             |
+                                        pshufd-magic-mask-2
+                                             |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 3  |  Pixel 1  |  Pixel 2  |  Pixel 0  | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+    Pero, además, nos guardamos una copia de la fila central reordenada de la siguiente forma:
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                                             |
+                                        pshufd-magic-mask-1
+                                             |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 2  |  Pixel 2  |  Pixel 1  |  Pixel 1  | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+    Esto es porque si la condición original (B = H o D = F) da falso, necesitamos quedarnos con 
+los píxeles en este orden.
+
+    Ahora que ya tenemos los registros reordenados, comparamos el superior con el del medio, el
+inferior con el del medio, y aplicamos ands y pands para quedarnos con los resultados que 
+buscamos. Vamos a usar la nomenclatura dada por el enunciado para nombrar a cómo tenemos los 
+píxeles, siendo BDEFH los correspondientes al píxel 1 y B'D'E'F'H' los correspondientes al 
+píxel 2. 
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |    B'     |     B'    |     B     |     B     |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                                             |
+                                          pcmpeqd
+                                             |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |    F'     |     D'    |     F     |     D     |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+    Con esto obtenemos la máscara para saber si en el resultado tiene que ir, la D o la E, usando pand y pandn, con paddusb obtenemos el valor que corresponda para cada píxel. Notar que hacer esto mismo para la fila inferior es análogo.                    
