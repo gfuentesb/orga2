@@ -394,7 +394,7 @@ Blit:
  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+             |
                                                             pcmpeqd----+
 Mascara Magenta                                                |       |
- +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+             |       |
+ +--+--+--+--+--+--+--+--+--+--+--+--+que en castellano --+--+--+--+             |       |
  |  MAGENTA  |  MAGENTA  |  MAGENTA  |  MAGENTA  |             |       |
  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-------------+       |
  |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|                     |
@@ -441,6 +441,154 @@ Mascara Magenta                                                |       |
                                          Hoja 7
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
 -----------------------------------------------------------------------------------------------
+
+                                                           888888   8888b.     dP""b8   888888 
+                                                           88__      8I  Yb   dP   `"   88__   
+                                                           88""      8I  dY   Yb  "88   88""   
+                                                           888888   8888Y"     YboodP   888888 
+
+    Edge-Detection, que en castellano significa Detección de Bordes, es como se le llama al 
+filtro que, tras aplicarlo a una imagen, nos deja sólo con los "bordes" de las figuras dentro
+de ella. Se conoce como un borde a un punto en donde hubo un cambio bruzco de intensidad
+de luz. Existen varias formas de detectar dichos bordes, una de ellas es calculando la 
+derivada de la intensidad del brillo píxel a píxel. Para esto, se multiplica cada píxel y los
+de su alrededor por valores que se corresponden con una matriz, y luego se suman todos de forma
+saturada, dicho valor representaría la derivada en para ese píxel. La matriz usada es dada por
+la cátedra, pertenece al operador de derivación de Laplace.
+
+
+
+  +--------------------------------------+    +--------------------------------------+
+  |     ############################     |    |     +--------------------------+     |
+  |     ############################     |    |     |                          |     |
+  |                #######               |    |     +----------+     +---------+     |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |    ####        #######               |    |    +--+        |     |               |
+  |    ####        #######               |    |    |  |        |     |               |
+  |    ####        #######               |    |    +--+        |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               | 
+  |                #######               |    |                |     |               | 
+  |                #######               |    |                |     |               | 
+  |                #######               |    |     +----------+     +---------+     | 
+  |     ############################     |    |     |                          |     | 
+  |     ############################     |    |     +--------------------------+     | 
+  +--------------------------------------+    +--------------------------------------+ 
+
+
+
+                  .-.
+Implementación en |   :
+                  `-'
+
+    Arrancamos desde la fila 1, columna 1, y vamos sumando los valores en un int, columna por 
+columna respetando la matriz, es decir, para el pixel en la posición y:1, x:1, sumamos los 
+píxeles que corresponderían a la columna de la izquierda, multiplicandolos por los valores 
+correspondientes según la matriz (0.5, 1, 0.5), luego para la columna central (1, -6, 1) y
+finalmente para la columna de la derecha (0.5, 1, 0.5), luego de sumar todo esto en un int, 
+lo saturamos, y ese sería el valor de la posición 1, 1. 
+
+
+-----------------------------------------------------------------------------------------------
+                                         Hoja 8
+Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
+-----------------------------------------------------------------------------------------------
+
+
+                  .-. .-. .  . 
+Implementación en |-| `-. |\/| :
+                  ` ' `-' '  ` 
+
+    Se copia la fila anterior a la que contiene el pixel que se quiere procesar, se hacen 
+2 copias, shifteando una un byte a la derecha con psrldq, y otra dos bytes a la derecha, 
+con la misma instrucción. Luego se desempaquetan las partes bajas de todos estos registros, se 
+multiplican los correspondientes por el valor de la matriz (para dividir por 2 utilizamos 
+psraw shifteando a la derecha 1 bit).
+    Se suman todos estos valores de forma empaquetada, y se procesa la fila central, utilizando
+el mismo mecanismo visto anteriormente de shifteo. Para multiplicar por -6, se resta 6 veces el
+registro, así evitamos convertir a punto flotante.
+    La tercer y última fila se procesa de igual manera que la primera. Luego se suma todo y se
+empaqueta a bytes, ese resultado se copia a la imagen destino. 
+
+                                Proceso de Shifteo de Columnas
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00| xmm0
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |00|15|14|13|12|11|10|09|08|07|06|05|04|03|02|01| xmm1
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |00|00|15|14|13|12|11|10|09|08|07|06|05|04|03|02| xmm2
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+                  Desempaquetado (Se completa con 0's ya que son unsigned)
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  07 |  06 |  05 |  04 |  03 |  02 |  01 | 00  |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ xmm0
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  08 |  07 |  06 |  05 |  04 |  03 |  02 |  01 |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ xmm1
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  09 |  08 |  07 |  06 |  05 |  04 |  03 |  02 | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ xmm2
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+
+
+-----------------------------------------------------------------------------------------------
+                                         Hoja 9
+Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
+-----------------------------------------------------------------------------------------------
+
+           Cada registro es multiplicado por el elemento correspondiente de la matriz
+            y luego se suman todos, se carga la próxima fila y esto se repite hasta 
+              procesar todas las filas. Finalmente, el resultado de la suma
+                queda en un solo registro que se empaqueta y se manda a guardar.
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  p7 |  p6 |  p5 |  p4 |  p3 |  p2 |  p1 |  p0 | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ xmm0
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                                             | packuswb
+                                             V
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     | 0| 0| 0| 0| 0| 0| 0| 0|p7|p6|p5|p4|p3|p2|p1|p0|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ xmm0
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+
+
+
 
 
 
