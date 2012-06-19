@@ -61,7 +61,6 @@ ______                               _ _
                         +----------+----------+----------+
 -----------------------------------------------------------------------------------------------
                                          Hoja 1
-
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
 -----------------------------------------------------------------------------------------------
 
@@ -114,6 +113,7 @@ parte; así, se ve cómo el primer píxel intercambia los componentes RGB por GB
 
     Una vez aplicada la máscara, se mueve de forma alineada a la memoria destinada para la 
 imagen resultante, de nuevo, los píxeles restantes se mueven de forma desalineada.
+
 
 
 
@@ -442,12 +442,189 @@ Mascara Magenta                                                |       |
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
 -----------------------------------------------------------------------------------------------
 
+                  8b    d8  dP"Yb  88b 88  dP"Yb   dP""b8 88  88 88""Yb  dP"Yb  8b    d8 888888
+                  88b  d88 dP   Yb 88Yb88 dP   Yb dP   `" 88  88 88__dP dP   Yb 88b  d88 88__  
+                  88YbdP88 Yb   dP 88 Y88 Yb   dP Yb      888888 88"Yb  Yb   dP 88YbdP88 88""  
+                  88 YY 88  YbodP  88  Y8  YbodP   YboodP 88  88 88  Yb  YbodP  88 YY 88 888888
+                  
+	El filtro monochrome permite lograr el un curioso efecto vintage, dando la apariencia de 
+tratarse de fotografías antiguas. Para lograr dicho efecto basta con multiplicar cada canal por
+una constante predefinida para el mismo, sumar los resultados y replicar dicho valor en los
+tres canales.
+
++----------+               +----------+              +----------+              +----------+
+|  88""Yb  |               |  88""Yb  |              |  dP""b8  |              |  88""Yb  |
+|  88__dP  |88888       __ |  88__dP  |  ·     __    | dP   `"  |  ·     _     |  88__dP  |
+|  88      |       /\ /\ / |  88"Yb   | ---  /\  /|  | Yb  "88  | --- /\  ) |  |  88""Yb  |
+|  88      |88888  \/.\// x|  88  Yb  |  ·   \/./ |x |  YboodP  |  ·  \/./_ |x |  88oodP  |
++----------+               +----------+ 	         +----------+              +----------+
+ 
+	                    +----------+----------+----------+
+                        |  88""Yb  |  88""Yb  |  88""Yb  |
+                        |  88__dP  |  88__dP  |  88__dP  |
+                        |  88      |  88      |  88      |
+                        |  88      |  88      |  88      |
+                        +----------+----------+----------+
+                        
+                        
+                  .-.
+Implementación en |   :
+                  `-'
+                  
+	La implementación en C es bastante sencilla, recorriendo la imagen pixel a pixel y
+aplicando la fórmula obtenemos el valor deseado. Luego lo replicamos en los tres canales del 
+destino y obtenemos el resultado buscado.
+
+                  .-. .-. .  . 
+Implementación en |-| `-. |\/| :
+                  ` ' `-' '  ` 
+
+    Como tenemos que hacer operaciones aritéticas no enteras necesitamos tener cada número en
+formato float para lo cual primero lo desempaquetamos de 8 a 32 bits, quedando los 4 pixels en
+4 registros distintos. Y luego convertimos de enteros de 32bits a escalares de presición
+simple, que también ocupan 32 bits. En ese momento procedemos a multiplicar por las constantes.
+	Luego reempaquetamos con sumas horizontales y reconvertimos a enteros, teniendo así en los
+ bytes 0, 4, 8 y 12 los valores requeridos para los pixels 3 2 1 y 0 respectivamente. Solo 
+ resta replicar dichos valores en los canales que corresponden y esto lo hacemos a partir de la
+instrucción pshufb.
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                                             |
+                                             |
+                            punpck(l/h)bw + punpck(l/h)wd + cvtdq2ps
+                                             |
+                                             |
+											 |
+											 |
+-----------------------------------------------------------------------------------------------
+                                         Hoja 8
+Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
+-----------------------------------------------------------------------------------------------		
+									         |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+|  A Pix0   |  B Pix0   |  G Pix0   |  R Pix0   |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+    x4  (Pix1, Pix2, Pix3, Pix4)
+|15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                        |
+                        |
+                        |
+                        |
+                        |
+                        |
+                        |                                    
+                        |                                     CONSTANTES
+                        |                  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                        |                  |     0     |   0.21    |   0.71    |   0.07    |
+                      mulps----------------+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                        |                  |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                        |                  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                        |
+                        |
+             haddps + haddps + haddps + cvtps2dq
+                        |
+                        |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |        |12|        |08|        |04|        |00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+						|
+                        |
+                        |
+                   pshufb (máscara 0x000F444F888FCCCF)
+                        |
+                        |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+								
+
+
+								
+															  .dP"Y8 888888 88""Yb 88    db    
+															  `Ybo." 88__   88__dP 88   dPYb   
+															  o.`Y8b 88""   88"""  88  dP__Yb  
+															  8bodP' 888888 88     88 dP""""Yb
 
 
 
+	Para obtener una imagen en tono sepia o también conocido como solarizar una fotografía
+hemos recurrido al método provisto por la cátedra. Se debían sumar los 3 canales de cada pixel
+y almacenar dicho resultado en los canales multiplicándolo por la constante correspondiente 
+al canal en cuestión. Estas eran 0.5 para el canal R, 0.3 para el canal G y 0.2 para el canal 
+B. De este modo se obtiene el característico tono ocre que antiguamente se utilizaba para
+preservar por maś tiempo una fotografía en papel evitando el deterioro.
 
 
+-----------------------------------------------------------------------------------------------
+                                         Hoja 8
+Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
+-----------------------------------------------------------------------------------------------	
 
+				  .-.
+Implementación en |   :
+                  `-' 
+	La implementación de este filtro en C requirió de una recorrida completa de la imágen
+alterando los píxeles tal como indica la fórmula. Para cada posición calculamos la suma de los 
+tres canales y luego fuimos almacenando en la posición de memoria de destino la suma temporal 
+multiplicada por las constantes correspondientes a los canales.
+               
+                  .-. .-. .  . 
+Implementación en |-| `-. |\/| :
+                    ' `-' '  ` 
+    Como tenemos que hacer operaciones aritméticas no enteras necesitamos tener cada número en
+formato float para lo cual primero lo desempaquetamos de byte a word bits, quedando los 4 
+pixels en 2 registros distintos. Procedemos a sumar horizontalmente obteniendo
+las sumas de dos canales en 16 bits de presición otra vez en un solo registro.
+	Luego repetimos el procedimiento pero esta vez de word a doubleword, quedandome las cuatro 
+sumas de los 4 canales, una por pixel, en 32 bits de presición. Paso a convertir los 
+doublewords a escalares de presición simple, los mismos coinciden en tamaño. 
+	Llegado a este punto los separo en 4 registros distintos, y luego utilizo un shuffle para 
+replicar las correspondientes sumas temporales 4 veces en cada registro. Ahora solo resta 
+multiplicar por las constantes que corresponden a cada canal, convertir nuevamente a enteros de
+32 bits para reempaquetarlos de double a word y de word a byte progresivamente y guardarlos
+en memoria. 
 
-
-
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                                             |
+                                             |
+                            punpck(l/h)bw + phaddw + punpck(l/h)wd + phaddd + cvtdq2ps
+                                             |
+									         |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+| TMP Pix3  | TMP Pix2  | TMP Pix1  |  TMP Pix0 |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+    
+|15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                        |
+                       shufps x4, llevandome cada TMP a un registro distinto
+                        |
+                       pshufd en cada uno de esos registros, replicando el TMP 4 veces
+                        |                                    
+                        |                                     CONSTANTES
+                        |                  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                        |                  |     0     |    0.5    |    0.3    |    0.2    |
+                      mulps----------------+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                        |                  |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                        |                  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                        |
+                    packusdw + packusdw + packuswb
+                        |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+-----------------------------------------------------------------------------------------------
+                                         Hoja 9
