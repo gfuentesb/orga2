@@ -1,5 +1,6 @@
 section .data
 DEFAULT REL
+thirteen: dd 13.0, 13.0, 13.0, 13.0
 section .text
 global blur_asm
 
@@ -47,8 +48,11 @@ blur_asm:
     add src, src_rs
     add dst, dst_rs
     add dst, dst_rs
+    add dst, 8
     pxor xmm8, xmm8
     pxor xmm9, xmm9
+
+    movdqu xmm12, [thirteen]
 
 .loop_filas:
     xor rax, rax
@@ -153,12 +157,45 @@ blur_asm:
         pslldq xmm8, 8
         paddusw xmm15, xmm8
 
-        psraw xmm14, 4
-        psraw xmm15, 4
+        movdqa xmm8, xmm14
+        movdqa xmm9, xmm14
+        movdqa xmm10, xmm15
+        movdqa xmm11, xmm15
+
+        punpcklwd xmm8, xmm13
+        punpckhwd xmm9, xmm13
+        punpcklwd xmm10, xmm13
+        punpckhwd xmm11, xmm13
+
+        cvtdq2ps xmm8, xmm8
+        cvtdq2ps xmm9, xmm9
+        cvtdq2ps xmm10, xmm10
+        cvtdq2ps xmm11, xmm11
+
+        divps xmm8, xmm12
+        divps xmm9, xmm12
+        divps xmm10, xmm12
+        divps xmm11, xmm12
+
+        cvtps2dq xmm8, xmm8
+        cvtps2dq xmm9, xmm9
+        cvtps2dq xmm10, xmm10
+        cvtps2dq xmm11, xmm11
+
+        packusdw xmm8, xmm9
+        packusdw xmm10, xmm11
+
+        ;packuswb xmm8, xmm10
+
+        movdqa xmm14, xmm8
+        movdqa xmm15, xmm10
+
+        ;psraw xmm14, 4
+        ;psraw xmm15, 4
 
         packuswb xmm14, xmm15
-
         movdqu [dst + rax], xmm14
+        ;movdqu [dst + rax], xmm10
 
         add rax, 16
         cmp rax, w
