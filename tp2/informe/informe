@@ -268,23 +268,23 @@ Marquez, Somodi, Vanotti                   |                      Organización 
     |           7169399                    |
     |             |  |                     |
     |             |  |                     |
-    |             |  |                     |
-    |_____________|  |_____________________|
+    |             |  |                  <*>|
+    |_____________|  |___________________|_|
     |                                      |
     |                                      |
     |                                      |
     +--------------------------------------+
 
-                       +--------------------------+
-                       |                          |
-                       |                          |
-                       +--------------------------+
+                           +--------------------------+
+                           |                          |
+                           |                          |
+                           +--------------------------+
 
 
-                       +--------------------------+
-                       |                          |
-                       |                          |
-                       +--------------------------+
+                           +--------------------------+
+                           |                          |
+                           |                          |
+                           +--------------------------+
 
 
                             +--------------------------------------+
@@ -303,8 +303,8 @@ Marquez, Somodi, Vanotti                   |                      Organización 
                             |           7169399        \ /         |
                             |             |  |         ###   #     |
                             |             |  |     ###########     |
-                            |             |  |    #   #####        |
-                            |_____________|  |________#####________|
+                            |             |  |    #   #####     <*>|
+                            |_____________|  |________#####______|_|
                             |                        #     #       |
                             |                       ##     ##      |
                             |                     ####     ####    |
@@ -317,13 +317,130 @@ Marquez, Somodi, Vanotti                   |                      Organización 
 -----------------------------------------------------------------------------------------------
 
 
+                  .-.
+Implementación en |   :
+                  `-'
+
+    Ya que sabemos que el blit lo debemos posicionar abajo a la derecha de nuestra imagen
+destino, utilizando la función MEMCPY extraída de la librería estándard de ANSI C para copiar
+la imagen tal cual en el destino. Esto lo hacemos fila por fila, ya que no podemos pisar la
+memoria que hay entre el final de una fila y la fila siguiente (width <= row_size), y tampoco
+podemos asumir que src_row_size sea igual a dst_row_size.
+
+    Una vez copiada toda la imagen, procedemos a copiar el blit, recorriendo fila por fila del
+blit, columna por columna, copiando los píxeles que no son magenta en la imagen destino.
+
+    Es probable, dependiendo del compilador con la que se haya compilado la LibC de la pc donde
+corra el programa, que MEMCPY use instrucciones SSE para realizar la copia. Esto se tendrá en 
+cuenta en el análisis de rendimiento.
 
 
 
+                  .-. .-. .  . 
+Implementación en |-| `-. |\/| :
+                  ` ' `-' '  ` 
+
+    Para la implementación en ASSEMBLER, aprovechamos lo mismo que en la implementación de C,
+copiando primero todas las filas que no entren en el blit " a lo bruto", con la instrucción
+movdqa para hacerlo de forma alineada y luego retrocediendo y usando la instrucción movdq para
+los, a lo sumo, 15 bytes restantes.
+
+    Una vez llegada a una fila en la que se debería insertar el blit, se van copiando las
+columnas hasta llegar a la última que sea múltiplo de 16 sin que empiece formando parte del
+blit, se copia, se vuelve al inicio del blit, y se aplica el blit de forma no alineada para 
+source (en breve veremos en qué consiste aplicar el blit). Luego se vuelve a ir hacia donde 
+nos habíamos quedado, y empezamos a aplicar el blit de forma alineada para source, pero 
+desalineada para el blit. Esto es así ya que nada nos asegura que podamos realizar ambas copias
+de forma alineada. Finalmente, llegamos a los últimos píxeles que no entran en un registro xmm
+sin pisar la memoria fuera de la imagen, por esto, volvemos para atrás la cantidad necesaria
+de bytes y volvemos a procesarlos de forma alineada, como hicimos en todos los ejercicios hasta
+ahora.
+
+    Aplicar el blit, hace referencia al proceso de mezclar los dos mapas de bit, el de origen
+(source), y el del blit, sobre la imagen destino (dest). Esto lo hacemos usando comparaciones
+y operaciones lógicas empaquetadas. Se tienen 4 píxeles contiguos cargados en un registro XMM, 
+luego se utiliza la operación pcmpeqd que compara, de forma empaquetada, los double-words que
+se encuentran en un registro contra los double-words de otro registro, en el cual tenemos 4
+double-words con el píxel color magenta. Esto nos genera una máscara con unos en los
+double-words que corresponden a píxeles magenta, y 0 donde no hay magenta. Al momento de 
+combinarlas, si en el blit tenemos un pixel magenta, queremos que en dest prevalezca el pixel 
+de source, si en el blit el píxel no es magenta, en dest debería prevalecer el píxel del blit.
+Es por eso, que luego de hacer pcmpeqd, hacemos un pand entre los píxeles de source y los 
+resultantes del pcmpeqd, de esta forma, nos quedarían sólo los píxeles de source que 
+corresponden a píxeles magenta del blit; luego hacemos pandn entre el resultado de pcmpeqd y
+el blit, quedandonos así con los píxeles del blit que no son magenta. Finalmente, combinamos 
+ambos registros mediante la instrucción por, es claro ver que o nos queda un pixel de source
+o nos queda un pixel de blit, y que no se nos mezclan. En esto consiste "aplicar el blit". 
 
 
 
+-----------------------------------------------------------------------------------------------
+                                         Hoja 6
+Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
+-----------------------------------------------------------------------------------------------
 
+Source:
+ +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+ |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  |
+ +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+ |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+ +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+Blit:
+ +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+ |  MAGENTA  |Pixel 2blit|Pixel 1blit|  MAGENTA  |
+ +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-------------+
+ |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|             |
+ +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+             |
+                                                            pcmpeqd----+
+Mascara Magenta                                                |       |
+ +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+             |       |
+ |  MAGENTA  |  MAGENTA  |  MAGENTA  |  MAGENTA  |             |       |
+ +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-------------+       |
+ |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|                     |
+ +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+                     |
+                                                                       |
+                                                                       |
+                                             +-------------------------+
+                                             |
+                                             |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |0xFFFFFFFF |0x00000000 |0x00000000 |0xFFFFFFFF |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+  
+                                             |
+                                             |             
+                         +-------------------+----------------------+
+                         |                                          |
+                      pand Source                              pandn Blit
+                         |                                          |
+ +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+                  |
+ |  Pixel 3  |0x00000000 |0x00000000 |  Pixel 0  |                  |
+ +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+                  |
+ |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|                  |
+ +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+                  |
+                         |                                          |
+                         |                  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                         |                  |0x00000000 |Pixel 2blit|Pixel 1blit|0x00000000 |
+                         |                  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                         |                  |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                         |                  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                         |                                          |
+                         |                                          |
+                         |                    por                   |
+                         +---------------------+--------------------+
+                                               |
+                                               |
+                       +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                       |  Pixel 3  |Pixel 2blit|Pixel 1blit|  Pixel 0  |
+                       +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                       |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                       +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+-----------------------------------------------------------------------------------------------
+                                         Hoja 7
+Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
+-----------------------------------------------------------------------------------------------
 
 
 
