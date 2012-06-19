@@ -13,12 +13,46 @@ BITS 32
 %define PRINT_BUFFER  303
 
 extern fin_intr_pic1
+extern print_char
+extern black_screen
+extern print_registers
 
 global _isr0
 _isr0:
 ; /* COMPLETAR LA RUTINA */
+    pushad
+    call black_screen
+    xchg bx, bx
+    mov eax, 1
+    mov ebx, 2
+    mov ecx, 3
+    mov edx, 4
+    mov esi, 5
+    mov edi, 6
+    ;mov ebp, 7
+    ;mov esp, 8
+    push esp
+    push ebp
+    push edi
+    push esi
+    push edx
+    push ecx
+    push ebx
+    push eax
+    mov eax, cr3
+    push eax
+    mov eax, cr2
+    push eax
+    mov eax, cr0
+    push eax
+    call print_registers
+    xchg bx, bx
+    ret
 
 
+global _isr1
+_isr1:
+    ret
 
 ; /* COMPLETAR */
 

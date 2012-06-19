@@ -81,7 +81,7 @@ A20_habilitada:
         lgdt [GDT_DESC]
 
         mov eax, cr0
-        or eax, 1
+        or eax, 0x1
         mov cr0, eax
 
         jmp 0x30:modo_protegido
@@ -102,6 +102,10 @@ modo_protegido:
         mov gs, ax
 
         call clean_screen
+        call inicializar_idt
+        lidt [IDT_DESC]
+        int 8
+        
 		jmp $
 
 %include "a20.asm"
