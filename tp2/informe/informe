@@ -121,7 +121,6 @@ imagen resultante, de nuevo, los píxeles restantes se mueven de forma desalinea
 
 
 
-
 -----------------------------------------------------------------------------------------------
                                          Hoja 0x2
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
@@ -479,7 +478,7 @@ destino y obtenemos el resultado buscado.
 Implementación en |-| `-. |\/| :
                   ` ' `-' '  ` 
 
-    Como tenemos que hacer operaciones aritéticas no enteras necesitamos tener cada número en
+    Como tenemos que hacer operaciones aritméticas no enteras necesitamos tener cada número en
 formato float para lo cual primero lo desempaquetamos de 8 a 32 bits, quedando los 4 pixels en
 4 registros distintos. Y luego convertimos de enteros de 32bits a escalares de presición
 simple, que también ocupan 32 bits. En ese momento procedemos a multiplicar por las constantes.
@@ -723,6 +722,7 @@ Marquez, Somodi, Vanotti                   |                      Organización 
   +--------------------------------------+    +--------------------------------------+ 
 
 
+
                   .-.
 Implementación en |   :
                   `-'
@@ -735,11 +735,16 @@ finalmente para la columna de la derecha (0.5, 1, 0.5), luego de sumar todo esto
 lo saturamos, y ese sería el valor de la posición 1, 1. 
 
 
+-----------------------------------------------------------------------------------------------
+                                         Hoja 8
+Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
+-----------------------------------------------------------------------------------------------
+
+
                   .-. .-. .  . 
 Implementación en |-| `-. |\/| :
                   ` ' `-' '  ` 
-                  
-                  
+
     Se copia la fila anterior a la que contiene el pixel que se quiere procesar, se hacen 
 2 copias, shifteando una un byte a la derecha con psrldq, y otra dos bytes a la derecha, 
 con la misma instrucción. Luego se desempaquetan las partes bajas de todos estos registros, se 
@@ -797,6 +802,13 @@ Marquez, Somodi, Vanotti                   |                      Organización 
                      |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
                      +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
+
+
+-----------------------------------------------------------------------------------------------
+                                         Hoja 9
+Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
+-----------------------------------------------------------------------------------------------
+
            Cada registro es multiplicado por el elemento correspondiente de la matriz
             y luego se suman todos, se carga la próxima fila y esto se repite hasta 
               procesar todas las filas. Finalmente, el resultado de la suma
@@ -815,7 +827,67 @@ Marquez, Somodi, Vanotti                   |                      Organización 
                      |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
                      +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 
------------------------------------------------------------------------------------------------
-                                         Hoja 0xD
-Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
------------------------------------------------------------------------------------------------
+
+
+                                      .dP"Y8  dP""b8    db    88     888888     oP"Yb. Yb  dP 
+                                      `Ybo." dP   `"   dPYb   88     88__       "' dP'  YbdP  
+                                      o.`Y8b Yb       dP__Yb  88  .o 88""         dP'   dPYb  
+                                      8bodP'  YboodP dP""""Yb 88ood8 888888     .d8888 dP  Yb 
+
+
+    De chicos todos soñamos con ser detectives y encontrar al ladrón que se robó las joyas tras
+hacer un minuscioso peritaje sobre las filmaciones del edificio de enfrente de la escena del
+crimen. Una herramienta fundamental para ello es poder hacer zoom sobre ciertos sectores de una
+imagen, eso es lo que hace scale2x, escala el sector superior izquierdo de una imagen al doble 
+de alto y ancho. 
+
+ +--------------------------------------+           +--------------------------------------+
+ |                  |2.71828182845904523|           |                                      |
+ |  ##############  |5360287471352662497|           |     ############################     |
+ |        ##        |7572470936999595749|           |     ############################     |
+ |        ##        |6696762772407663035|           |                #######               |
+ |        ##        |3547594571382178525|           |                #######               |
+ |        ##        |1664274274663919320|           |                #######               |
+ |        ##        |0305992181741359662|           |                #######               |
+ |        ##        |9043572900334295260|           |                #######               |
+ |        ##        |5956307381323286279|           |                #######               |
+ |        ##        |4349076323382988075|           |                #######               |
+ |  ##############  |3195251019011573834|           |                #######               |
+ |                  |1879307021540891499|           |                #######               |
+ +------------------+-------------------+ -> Scale  |                #######               |
+ |--.- ..- . / .. -. --. . -. .. --- ...|           |                #######               |
+ |--- ... --..-- / ... . / -. --- ... / |           |                #######               |
+ |--- -.-. ..- .-. .-. .. --- / .--. ---|           |                #######               |
+ |-. . .-. / .- .-.. --. --- / . -. /   |           |                #######               |
+ |-.-. --- -.. .. --. --- / -- --- .-.  |           |                #######               |
+ |... . / .- -.-. .- .-.-.- .-.-.- / .- |           |                #######               |
+ |.-.. --. ..- .. . -. / .-.. --- / .-..|           |                #######               |
+ |. . .-. .- ..--.. / ..- -. / ... .-   |           |                #######               |
+ |.-.. ..- -.. --- / .--. .- .-. .- / - |           |                #######               |
+ |--- -.. --- ... / .-.. --- ... / --.- |           |     ############################     |
+ |..- . / -- . / -.-. --- -. --- -.-.   |           |     ############################     |
+ |. -.                                  |           |                                      |
+ +------------------+-------------------+           +--------------------------------------+
+
+ 
+
+                  .-.
+Implementación en |   :
+                  `-'
+
+    Como todas las implementaciones en C hasta ahora, la implementación de este filtro resulta
+bastante trivial. Recorremos fila por fila y columna por columna hasta la mitad de la imagen, 
+y para cada píxel tenemos un arreglo de punteros que apuntan a los píxeles que van a quedar
+en cada posición en la imagen final (a partir de cada píxel la imagen final tiene 4 píxeles más
+basándose en los píxeles adyacentes al original). Se setean los punteros correctos basado en 
+lo provisto por la cátedra y al final de dicha elección se copian a la imagen destino. 
+
+
+
+                  .-. .-. .  . 
+Implementación en |-| `-. |\/| :
+                  ` ' `-' '  ` 
+
+
+
+

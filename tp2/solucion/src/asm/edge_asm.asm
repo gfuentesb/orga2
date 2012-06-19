@@ -46,6 +46,8 @@ edge_asm:
     mov src_rs, r8
     mov dst_rs, r9
     
+    sub w, 8
+    sub h, 1
     mov rax, w
     xor remainding, remainding
     mov r9, 8
