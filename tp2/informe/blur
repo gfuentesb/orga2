@@ -107,4 +107,4 @@ De este modo, en xmm14 y xmm15 tenemos las sumas correspondientes a los píxeles
 Implementación en |   :
                   `-' 
 
-
+La implementación es C es bastante straightfoward. En consecuencia no la explicaremos.

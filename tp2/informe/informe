@@ -60,7 +60,7 @@ ______                               _ _
                         |  YboodP  |  88oodP  |  88  Yb  |
                         +----------+----------+----------+
 -----------------------------------------------------------------------------------------------
-                                         Hoja 1
+                                         Hoja 0x1
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
 -----------------------------------------------------------------------------------------------
 
@@ -123,7 +123,7 @@ imagen resultante, de nuevo, los píxeles restantes se mueven de forma desalinea
 
 
 -----------------------------------------------------------------------------------------------
-                                         Hoja 2
+                                         Hoja 0x2
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
 -----------------------------------------------------------------------------------------------
 
@@ -186,7 +186,7 @@ en el superior derecho, después inferior derecho, y finalmente inferior izquier
 
 
 -----------------------------------------------------------------------------------------------
-                                         Hoja 3
+                                         Hoja 0x3
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
 -----------------------------------------------------------------------------------------------
 
@@ -249,7 +249,7 @@ BLIT esto es posible.
 
 
 -----------------------------------------------------------------------------------------------
-                                         Hoja 4
+                                         Hoja 0x4
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
 -----------------------------------------------------------------------------------------------
     +--------------------------------------+                       +-------------------+
@@ -312,7 +312,7 @@ Marquez, Somodi, Vanotti                   |                      Organización 
 
 
 -----------------------------------------------------------------------------------------------
-                                         Hoja 5
+                                         Hoja 0x5
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
 -----------------------------------------------------------------------------------------------
 
@@ -375,7 +375,7 @@ o nos queda un pixel de blit, y que no se nos mezclan. En esto consiste "aplicar
 
 
 -----------------------------------------------------------------------------------------------
-                                         Hoja 6
+                                         Hoja 0x6
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
 -----------------------------------------------------------------------------------------------
 
@@ -394,7 +394,7 @@ Blit:
  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+             |
                                                             pcmpeqd----+
 Mascara Magenta                                                |       |
- +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+             |       |
+ +--+--+--+--+--+--+--+--+--+--+--+--+que en castellano --+--+--+--+             |       |
  |  MAGENTA  |  MAGENTA  |  MAGENTA  |  MAGENTA  |             |       |
  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+-------------+       |
  |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|                     |
@@ -438,7 +438,7 @@ Mascara Magenta                                                |       |
                        |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
                        +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 -----------------------------------------------------------------------------------------------
-                                         Hoja 7
+                                         Hoja 0x7
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
 -----------------------------------------------------------------------------------------------
 
@@ -457,9 +457,9 @@ tres canales.
 |  88__dP  |88888       __ |  88__dP  |  ·     __    | dP   `"  |  ·     _     |  88__dP  |
 |  88      |       /\ /\ / |  88"Yb   | ---  /\  /|  | Yb  "88  | --- /\  ) |  |  88""Yb  |
 |  88      |88888  \/.\// x|  88  Yb  |  ·   \/./ |x |  YboodP  |  ·  \/./_ |x |  88oodP  |
-+----------+               +----------+ 	         +----------+              +----------+
++----------+               +----------+              +----------+              +----------+
  
-	                    +----------+----------+----------+
+                        +----------+----------+----------+
                         |  88""Yb  |  88""Yb  |  88""Yb  |
                         |  88__dP  |  88__dP  |  88__dP  |
                         |  88      |  88      |  88      |
@@ -498,13 +498,13 @@ instrucción pshufb.
                             punpck(l/h)bw + punpck(l/h)wd + cvtdq2ps
                                              |
                                              |
-											 |
-											 |
+                                             |
+                                             |
 -----------------------------------------------------------------------------------------------
-                                         Hoja 8
+                                         Hoja 0x8
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
 -----------------------------------------------------------------------------------------------		
-									         |
+                                             |
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 |  A Pix0   |  B Pix0   |  G Pix0   |  R Pix0   |
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+    x4  (Pix1, Pix2, Pix3, Pix4)
@@ -533,10 +533,12 @@ Marquez, Somodi, Vanotti                   |                      Organización 
                      +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
                      |        |12|        |08|        |04|        |00|
                      +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-						|
+                        |
+                        |
                         |
                         |
                    pshufb (máscara 0x000F444F888FCCCF)
+                        |
                         |
                         |
                      +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
@@ -544,14 +546,12 @@ Marquez, Somodi, Vanotti                   |                      Organización 
                      +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
                      |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
                      +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
-								
 
 
-								
-															  .dP"Y8 888888 88""Yb 88    db    
-															  `Ybo." 88__   88__dP 88   dPYb   
-															  o.`Y8b 88""   88"""  88  dP__Yb  
-															  8bodP' 888888 88     88 dP""""Yb
+                                                                   .dP"Y8 888888 88""Yb 88    db    
+                                                                   `Ybo." 88__   88__dP 88   dPYb   
+                                                                   o.`Y8b 88""   88"""  88  dP__Yb  
+                                                                   8bodP' 888888 88     88 dP""""Yb
 
 
 
@@ -564,18 +564,42 @@ preservar por maś tiempo una fotografía en papel evitando el deterioro.
 
 
 -----------------------------------------------------------------------------------------------
-                                         Hoja 8
+                                         Hoja 0x9
 Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
 -----------------------------------------------------------------------------------------------	
-
-				  .-.
-Implementación en |   :
-                  `-' 
-	La implementación de este filtro en C requirió de una recorrida completa de la imágen
-alterando los píxeles tal como indica la fórmula. Para cada posición calculamos la suma de los 
-tres canales y luego fuimos almacenando en la posición de memoria de destino la suma temporal 
-multiplicada por las constantes correspondientes a los canales.
-               
++----------+         +----------+       +----------+       +----------+
+|  888888  |         |  88""Yb  |       |  dP""b8  |       |  88""Yb  |
+|    88    |88888    |  88__dP  |  ||   | dP   `"  |  ||   |  88__dP  |
+|    88    |         |  88"Yb   | ====  | Yb  "88  | ====  |  88""Yb  |
+|    88    |88888    |  88  Yb  |  ||   |  YboodP  |  ||   |  88oodP  |
++----------+         +----------+       +----------+       +----------+
+ 
+                        +----------+----------+----------+
+                        |  888888  |  888888  |  888888  |
+                        |    88    |    88    |    88    |
+                        |    88    |    88    |    88    |
+                        |    88    |    88    |    88    |
+                        +----------+----------+----------+
+                             |          |          |
+                             |          |          |
+                             |          |          |
+                             v          v          v
+                _  _        ___       ____       ____ 
+               ( \/ )      / __)     ( __ \     (___ \
+                )  (   _  (___ \   _  (__ (   _  / __/
+               (_/\_)  (_)(____/  (_)(____/  (_)(____)
+                             |          |          |
+                             |          |          |
+                             |          |          |
+                             v          v          v
+                        +----------+----------+----------+
+                        |  88""Yb  |  dP""b8  |  88""Yb  |
+                        |  88__dP  | dP   `"  |  88__dP  |
+                        |  88"Yb   | Yb  "88  |  88""Yb  |
+                        |  88  Yb  |  YboodP  |  88oodP  |
+                        +----------+----------+----------+
+                             
+                           
                   .-. .-. .  . 
 Implementación en |-| `-. |\/| :
                     ' `-' '  ` 
@@ -601,17 +625,34 @@ en memoria.
                                              |
                             punpck(l/h)bw + phaddw + punpck(l/h)wd + phaddd + cvtdq2ps
                                              |
-									         |
+                                             |
+-----------------------------------------------------------------------------------------------
+                                         Hoja 0xA
+Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
+-----------------------------------------------------------------------------------------------	
+                                             |
+                                             |
+                                             |
+                                             |
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 | TMP Pix3  | TMP Pix2  | TMP Pix1  |  TMP Pix0 |
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+    
 |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
                         |
+                        |
+                        |
+                        |
                        shufps x4, llevandome cada TMP a un registro distinto
                         |
+                        |
+                        |
+                        |
                        pshufd en cada uno de esos registros, replicando el TMP 4 veces
-                        |                                    
+                        |
+                        |
+                        |
+                        |
                         |                                     CONSTANTES
                         |                  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
                         |                  |     0     |    0.5    |    0.3    |    0.2    |
@@ -619,12 +660,162 @@ en memoria.
                         |                  |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
                         |                  +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
                         |
+                        |
+                        |
                     packusdw + packusdw + packuswb
+                        |
+                        |
+                        |
                         |
                      +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
                      |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  |
                      +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
                      |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
                      +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+                                         
+
+                                                           888888   8888b.     dP""b8   888888 
+                                                           88__      8I  Yb   dP   `"   88__   
+                                                           88""      8I  dY   Yb  "88   88""   
+                                                           888888   8888Y"     YboodP   888888 
+
+    Edge-Detection, que en castellano significa Detección de Bordes, es como se le llama al 
+filtro que, tras aplicarlo a una imagen, nos deja sólo con los "bordes" de las figuras dentro
+de ella. Se conoce como un borde a un punto en donde hubo un cambio bruzco de intensidad
+de luz. Existen varias formas de detectar dichos bordes, una de ellas es calculando la 
+derivada de la intensidad del brillo píxel a píxel. Para esto, se multiplica cada píxel y los
+de su alrededor por valores que se corresponden con una matriz, y luego se suman todos de forma
+saturada, dicho valor representaría la derivada en para ese píxel. La matriz usada es dada por
+la cátedra, pertenece al operador de derivación de Laplace.
+
 -----------------------------------------------------------------------------------------------
-                                         Hoja 9
+                                         Hoja 0xB
+Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
+-----------------------------------------------------------------------------------------------
+
+  +--------------------------------------+    +--------------------------------------+
+  |     ############################     |    |     +--------------------------+     |
+  |     ############################     |    |     |                          |     |
+  |                #######               |    |     +----------+     +---------+     |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |    ####        #######               |    |    +--+        |     |               |
+  |    ####        #######               |    |    |  |        |     |               |
+  |    ####        #######               |    |    +--+        |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               |
+  |                #######               |    |                |     |               | 
+  |                #######               |    |                |     |               | 
+  |                #######               |    |                |     |               | 
+  |                #######               |    |     +----------+     +---------+     | 
+  |     ############################     |    |     |                          |     | 
+  |     ############################     |    |     +--------------------------+     | 
+  +--------------------------------------+    +--------------------------------------+ 
+
+
+                  .-.
+Implementación en |   :
+                  `-'
+
+    Arrancamos desde la fila 1, columna 1, y vamos sumando los valores en un int, columna por 
+columna respetando la matriz, es decir, para el pixel en la posición y:1, x:1, sumamos los 
+píxeles que corresponderían a la columna de la izquierda, multiplicandolos por los valores 
+correspondientes según la matriz (0.5, 1, 0.5), luego para la columna central (1, -6, 1) y
+finalmente para la columna de la derecha (0.5, 1, 0.5), luego de sumar todo esto en un int, 
+lo saturamos, y ese sería el valor de la posición 1, 1. 
+
+
+                  .-. .-. .  . 
+Implementación en |-| `-. |\/| :
+                  ` ' `-' '  ` 
+                  
+                  
+    Se copia la fila anterior a la que contiene el pixel que se quiere procesar, se hacen 
+2 copias, shifteando una un byte a la derecha con psrldq, y otra dos bytes a la derecha, 
+con la misma instrucción. Luego se desempaquetan las partes bajas de todos estos registros, se 
+multiplican los correspondientes por el valor de la matriz (para dividir por 2 utilizamos 
+psraw shifteando a la derecha 1 bit).
+    Se suman todos estos valores de forma empaquetada, y se procesa la fila central, utilizando
+el mismo mecanismo visto anteriormente de shifteo. Para multiplicar por -6, se resta 6 veces el
+registro, así evitamos convertir a punto flotante.
+    La tercer y última fila se procesa de igual manera que la primera. Luego se suma todo y se
+empaqueta a bytes, ese resultado se copia a la imagen destino. 
+
+
+-----------------------------------------------------------------------------------------------
+                                         Hoja 0xC
+Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
+-----------------------------------------------------------------------------------------------
+                         
+                         Proceso de Shifteo de Columnas
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00| xmm0
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |00|15|14|13|12|11|10|09|08|07|06|05|04|03|02|01| xmm1
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |00|00|15|14|13|12|11|10|09|08|07|06|05|04|03|02| xmm2
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+                  Desempaquetado (Se completa con 0's ya que son unsigned)
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  07 |  06 |  05 |  04 |  03 |  02 |  01 | 00  |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ xmm0
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  08 |  07 |  06 |  05 |  04 |  03 |  02 |  01 |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ xmm1
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  09 |  08 |  07 |  06 |  05 |  04 |  03 |  02 | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ xmm2
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+           Cada registro es multiplicado por el elemento correspondiente de la matriz
+            y luego se suman todos, se carga la próxima fila y esto se repite hasta 
+              procesar todas las filas. Finalmente, el resultado de la suma
+                queda en un solo registro que se empaqueta y se manda a guardar.
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  p7 |  p6 |  p5 |  p4 |  p3 |  p2 |  p1 |  p0 | 
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ xmm0
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                                             | packuswb
+                                             V
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     | 0| 0| 0| 0| 0| 0| 0| 0|p7|p6|p5|p4|p3|p2|p1|p0|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ xmm0
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+-----------------------------------------------------------------------------------------------
+                                         Hoja 0xD
+Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
+-----------------------------------------------------------------------------------------------
