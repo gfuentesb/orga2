@@ -135,4 +135,148 @@ Marquez, Somodi, Vanotti                   |                      Organización 
     Aplicar este filtro no es más que replicar la imagen original 4 veces sobre el destino de 
 forma escalada. 
 
-    
+    +--------------------------------------+     +--------------------------------------+
+    |                                      |     |                  |                   |
+    |     ############################     |     |  ##############  |  ##############   |
+    |     ############################     |     |        ##        |        ##         |
+    |                #######               |     |        ##        |        ##         |
+    |                #######               |     |        ##        |        ##         |
+    |                #######               |     |        ##        |        ##         |
+    |                #######               |     |        ##        |        ##         |
+    |                #######               |     |        ##        |        ##         |
+    |                #######               |     |        ##        |        ##         |
+    |                #######               |     |        ##        |        ##         |
+    |                #######               |     |  ##############  |  ##############   |
+    |                #######               |     |                  |                   |
+    |                #######               |     +------------------+-------------------+
+    |                #######               |     |                  |                   |
+    |                #######               |     |  ##############  |  ##############   |
+    |                #######               |     |        ##        |        ##         |
+    |                #######               |     |        ##        |        ##         |
+    |                #######               |     |        ##        |        ##         |
+    |                #######               |     |        ##        |        ##         |
+    |                #######               |     |        ##        |        ##         |
+    |                #######               |     |        ##        |        ##         |
+    |                #######               |     |        ##        |        ##         |
+    |     ############################     |     |        ##        |        ##         |
+    |     ############################     |     |  ##############  |  ##############   |
+    |                                      |     |                  |                   |
+    +--------------------------------------+     +------------------+-------------------+
+
+
+                  .-.
+Implementación en |   :
+                  `-' 
+
+    Si la imagen tiene un alto o ancho impar, se descarta el último píxel del lado impar para
+poder procesarlo como una imagen con lados pares. Se procesa fila por medio, columna por medio
+copiando sólo los píxeles en posiciones pares a las 4 posiciones diferentes en la imágen
+destino. Se copia componente a componente, primero en el cuadrante superior izquierdo, luego
+en el superior derecho, después inferior derecho, y finalmente inferior izquierdo. 
+
+
+
+
+
+
+
+
+
+
+
+
+-----------------------------------------------------------------------------------------------
+                                         Hoja 3
+Marquez, Somodi, Vanotti                   |                      Organización Del Computador 2
+-----------------------------------------------------------------------------------------------
+
+
+
+                  .-. .-. .  . 
+Implementación en |-| `-. |\/| :
+                  ` ' `-' '  ` 
+
+    Dado que sólo tenemos que copiar la mitad de los píxeles (de cada 4 píxeles copiamos el 
+primero y el tercero), cargamos 16 bytes en un registro (xmm1), y aplicamos una máscara 
+utilizando la instrucción pshufd, la cual reordena los dwords dentro un registro xmm según 
+una máscara dada. 
+
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 3  |  Pixel 2  |  Pixel 1  |  Pixel 0  |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                                             |
+                                             |
+                                 pshufd_mask (máscara 0x00001000)
+                                             |
+                                             |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |  Pixel 0  |  Pixel 0  |  Pixel 2  |  Pixel 0  |
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+                     |15|14|13|12|11|10|09|08|07|06|05|04|03|02|01|00|
+                     +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+
+
+    Copiamos la parte baja de este registro xmm resultante a las cuatro posiciones
+correspondientes en el destino, en sentido horario, comenzando a partir del segundo cuadrante.
+ Esta copia la hacemos usando la instrucción movq.
+
+    Como es observable, si la imágen no tiene tamaño múltiplo de 16, los últimos cuatro píxeles
+podrían quedar sin procesar, es por eso que cuando llegamos al final, utilizamos el mismo 
+método del filtro anterior para procesarlos, volvemos para atrás lo suficiente para poder 
+cargar 16 bytes de forma no alineada en un registro xmm.
+
+
+
+
+                                                                       88""Yb 88     88 888888 
+                                                                       88__dP 88     88   88   
+                                                                       88""Yb 88  .o 88   88   
+                                                                       88oodP 88ood8 88   88  
+
+
+    El arte del blitting es el proceso de combinar dos mapas de bits en uno solo. Para este
+trabajo nos vemos ante la problemática de pegar una imagen sobre otra, asumiendo que el píxel
+color magenta representa la transparencia, y, por ende, que de ese pixel queda la imagen de 
+fondo.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
