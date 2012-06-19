@@ -169,8 +169,8 @@ Implementación en |   :
                   `-' 
 
     Si la imagen tiene un alto o ancho impar, se descarta el último píxel del lado impar para
-poder procesarlo como una imagen con lados pares. Se procesa fila por medio, columna por medio
-copiando sólo los píxeles en posiciones pares a las 4 posiciones diferentes en la imágen
+poder procesarlo como una imagen con longitudes pares. Se procesa fila por medio, columna por
+medio copiando sólo los píxeles en posiciones pares a las 4 posiciones diferentes en la imágen
 destino. Se copia componente a componente, primero en el cuadrante superior izquierdo, luego
 en el superior derecho, después inferior derecho, y finalmente inferior izquierdo. 
 
