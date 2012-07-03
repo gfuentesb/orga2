@@ -5,6 +5,13 @@ El proceso consistió en correr cada filtro en cada implementación con cada ima
 La cátedra nos provió de un método para contar la cantidad de ciclos que cuesta correr n veces un filtro con una imagen dada. De los datos
 obtenidos por este método, se consideraron la cantidad de ciclos consumidos de una función, el tamaño (cantidad de píxeles) de la imagen
 que estaba siendo procesada y el promedio de ciclos que se utilizó para procesar cada píxel.
+Los dos valores que más se utilizaron para calcular la performance de las implementaciones fueron: fueron el promedio de los promedios de ciclos por píxel y
+el promedio del total de ciclos por total de píxeles. Esto es, para calcular el primer valor, lo que se hizo fue para cada imagen se calculó en promedio
+cuánto ciclos tomó cada píxel. Para ello, se tomó la cantidad de ciclos totales que tomó procesar la imagen y se lo dividió por la cantidad de píxeles
+que poseía la imagen original. Luego se promediaron todos estos valores obtenidos. Para el segundo valor, se tomó la suma de la cantidad de ciclos
+que tardó en procesar todas las imágenes y se la dividió por la cantidad de píxeles procesados en total.
+Estos valores son, quizás, los que más sencillamente nos dan una idea de cuán rápido se aplica un filtro sobre una imagen y nos permiten ver rápidamente
+cómo se comparan unos con otros.
 Fue este el método que se utilizó para generar los resultados.
 
 Las conclusiones generales son que las implementaciones en ASM fueron significativamente más eficientes que las implementaciones en C.
@@ -108,11 +115,17 @@ No obstante, somos conscientes que nuestra implementación en C es subóptima, y
 
 Edge
 
+Al tratarse de una imagen den blanco y negro y tener un único canal, este filtro debe lidiar con menos memoria que los demás a un tamaño de imagen fijo.
+Adicionalmente, como la versión en ASM procesa de a 14 píxeles por iteración, los accesos a memoria no fueron alineados.
+Así y todo, aún siendo un filtro más complejo que rotar y utilizando accesos desalineados, al tener que trabajarse con menos memoria se logró
+un rendimiento semejante.
+El cuerpo de la implementación en ASM es bastante grande. Hay mucho para desempaquetar, shiftear, pasar a punto flotante, sumar, multiplicar, empaquetar...
+En C la implementación es bastante straightforward, procesándose un píxel a la vez.
+Otro detalle es que la versión de ASM tuvo ciertas optimizaciones como: dos valores que debían multiplicarse por un mismo coeficiente y luego sumarse, primero
+se sumaro y luego se multiplicaron. En C este tipo de optimizaciones se dejó a criterio del compilador.
 
-
-
-
-
+Los resultados son impresionantes. En ASM los promedios dieron de 3.8 ciclos por píxel en ambos casos y en C dieron de 78 y 77. Siendo el de ASM unas
+20 veces más veloz que el de C.
 
 
 
