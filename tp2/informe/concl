@@ -143,3 +143,11 @@ El filtro se aplica de la siguiente forma:
  - De la fila del medio se multiplica la columna del medio por -6 (restando su valor 6 veces a un registro en 0). Luego se le suman la columna de la derecha y la de la izquierda. 
 
 Todo esto se realiza en paralelo procesando de a 14 píxeles por cada acceso a memoria. 
+
+Alineación vs no alineación
+
+Otro análisis que se hizo fue el de comparar la implementación de filtros utilizando movdqa vs movdqu. Los resultados fueron completamente inesperados:
+La diferencia en performance entre ambos casos fue apenas notable. El filtro que se decidió tomar como ejemplo fue el filtro rotar, y los resultados
+fueron que la implementación utilizando movdqu fue un 2.5% más lenta que la que utiliza movdqa. Probablemente que la diferencia sea pequeña se deba a
+que el procesador realiza optimizaciones para el acceso a secciones consecutivas en la memoria haciendo que no haya cambios significativos en estos casos.
+Más pruebas harían falta para comparar esos puntos. Lo que sí, cuando cada ciclo cuenta, un 2.5% puede ser una taza interesante para ahorrarse.
