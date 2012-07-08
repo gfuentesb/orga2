@@ -24,7 +24,6 @@
 #define COLOR_LBROWN 8 + COLOR_BROWN
 #define COLOR_LWHITE 8 + COLOR_GRAY
 
-
 static char *exception_titles[] = {
     "Divide Error\n",
     "Debug\n",
@@ -48,7 +47,7 @@ static char *exception_titles[] = {
     "SIMD Floating Point Exception\n"
 };
 
-static void print_string(char *str, v_char format)
+static void print_string(char *str, v_char format, int row, int column);
 static void tohex(char *buf, unsigned int n);
 
 void clean_screen() {
@@ -111,16 +110,12 @@ void black_screen() {
 }
 
 
-void print_string(char *str, v_char format) {
-    static int fila = 10;
-
-    int columna = 10;
+void print_string(char *str, v_char format, int row, int column) {
     while (*str != 0) {
         format.ch = *str++;
-        print_char(format, fila, columna);
-        columna++;
+        print_char(format, row, column);
+        column++;
     }
-    fila++;
 }
 
 void print_exception(int t, struct registers_struct rs) {
