@@ -21,10 +21,24 @@
 void inicializar_idt() {
     IDT_ENTRY(0);
     IDT_ENTRY(1);
-    int i;
-    for (i = 2; i < 255; i++) {
-        idt[i] = idt[0];
-    }
+    IDT_ENTRY(2);
+    IDT_ENTRY(3);
+    IDT_ENTRY(4);
+    IDT_ENTRY(5);
+    IDT_ENTRY(6);
+    IDT_ENTRY(7);
+    IDT_ENTRY(8);
+    IDT_ENTRY(9);
+    IDT_ENTRY(10);
+    IDT_ENTRY(11);
+    IDT_ENTRY(12);
+    IDT_ENTRY(13);
+    IDT_ENTRY(14);
+    IDT_ENTRY(15);
+    IDT_ENTRY(16);
+    IDT_ENTRY(17);
+    IDT_ENTRY(18);
+    IDT_ENTRY(19);
 }
 
 idt_entry idt[255] = {};

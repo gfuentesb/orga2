@@ -15,7 +15,7 @@ typedef struct str_idt_descriptor {
 	unsigned int idt_addr;
 } __attribute__((__packed__)) idt_descriptor;
 
-/* Struct de una entrada de la IDT */
+/* Struct de una entrMatías Marquezada de la IDT */
 typedef struct str_idt_entry_fld {
 		unsigned short offset_0_15;
 		unsigned short segsel;

@@ -18,44 +18,93 @@ extern black_screen
 extern print_registers
 
 global _isr0
-_isr0:
-; /* COMPLETAR LA RUTINA */
-    pushad
-    call black_screen
-    xchg bx, bx
-    mov eax, 1
-    mov ebx, 2
-    mov ecx, 3
-    mov edx, 4
-    mov esi, 5
-    mov edi, 6
-    ;mov ebp, 7
-    ;mov esp, 8
-    push esp
-    push ebp
-    push edi
-    push esi
-    push edx
-    push ecx
-    push ebx
-    push eax
-    mov eax, cr3
-    push eax
-    mov eax, cr2
-    push eax
-    mov eax, cr0
-    push eax
-    call print_registers
-    xchg bx, bx
-    ret
-
-
 global _isr1
+global _isr2
+global _isr3
+global _isr4
+global _isr5
+global _isr6
+global _isr7
+global _isr8
+global _isr9
+global _isr10
+global _isr11
+global _isr12
+global _isr13
+global _isr14
+global _isr15
+global _isr16
+global _isr17
+global _isr18
+global _isr19
+
+%macro push_val 1
+    xor eax, eax
+    mov eax, %1
+    push eax
+
+%endmacro
+
+%macro imprimir_template 1
+    pushad
+    pushfd
+    push_val cr4
+    push_val cr3
+    push_val cr2
+    push_val cr0
+    push_val ss    
+    push_val gs
+    push_val fs
+    push_val es
+    push_val ds
+    push_val cs
+    push dword %1
+    call print_exception
+    add esp, 4
+%endmacro
+
+
+
+_isr0:
+    imprimir_template 0
 _isr1:
-    ret
-
-; /* COMPLETAR */
-
+    imprimir_template 1
+_isr2:
+    imprimir_template 2
+_isr3:
+    imprimir_template 3
+_isr4:
+    imprimir_template 4
+_isr5:
+    imprimir_template 5
+_isr6:
+    imprimir_template 6
+_isr7:
+    imprimir_template 7
+_isr8:
+    imprimir_template 8
+_isr9:
+    imprimir_template 9
+_isr10:
+    imprimir_template 10
+_isr11:
+    imprimir_template 11
+_isr12:
+    imprimir_template 12
+_isr13:
+    imprimir_template 13
+_isr14:
+    imprimir_template 14
+_isr15:
+    imprimir_template 15
+_isr16:
+    imprimir_template 16
+_isr17:
+    imprimir_template 17
+_isr18:
+    imprimir_template 18
+_isr19:
+    imprimir_template 19
 
 
 proximo_reloj:
