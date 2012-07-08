@@ -62,6 +62,8 @@ static void print_string(char *str, v_char format, int row, int column);
 static void print_register_template();
 static void tohex(char *buf, unsigned int n);
 static void print_registers(struct registers_struct *rs);
+static void print_backtrace(struct registers_struct *rs);
+static void print_stack(struct registers_struct *rs);
 
 void clean_screen() {
     v_char ch = {
@@ -188,7 +190,34 @@ void print_exception(int t, struct registers_struct rs) {
     print_string(exception_titles[t], d_ch , 1, 0);
     print_register_template();
     print_registers(&rs);
+    print_stack(&rs);
+    print_backtrace(&rs);
 }
+
+
+void print_backtrace(struct registers_struct *rs) { 
+    char eip[10] = {0};
+
+    int *pebp = (int *) rs->ebp;
+
+    int i = 0;
+    while (pebp != 0 && i < 6) {
+        tohex(eip, *(pebp + 1));
+        print_string(eip, d_ch, 12 + i, BACKTRACE_COLUMN);
+        pebp = (int *) *(pebp);
+    }
+}
+
+void print_stack(struct registers_struct *rs) {
+    char stack[10] = {0};
+    int i = 0;
+    int *esp = (int *) rs->esp;
+    for (i = 0; i < 6; i++) {
+        tohex(stack, *(esp + i));
+        print_string(stack, d_ch, 12 + i, STACK_COLUMN);;
+    }
+}
+
 
 void print_registers(struct registers_struct *rs) {
     char number[9] = {0};
