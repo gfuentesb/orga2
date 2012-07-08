@@ -205,13 +205,15 @@ void print_backtrace(struct registers_struct *rs) {
         tohex(eip, *(pebp + 1));
         print_string(eip, d_ch, 12 + i, BACKTRACE_COLUMN);
         pebp = (int *) *(pebp);
+        i++;
     }
 }
 
 void print_stack(struct registers_struct *rs) {
     char stack[10] = {0};
     int i = 0;
-    int *esp = (int *) rs->esp;
+    int *esp = ((int *) rs->esp) + 3;
+
     for (i = 0; i < 6; i++) {
         tohex(stack, *(esp + i));
         print_string(stack, d_ch, 12 + i, STACK_COLUMN);;
