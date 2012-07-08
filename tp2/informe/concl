@@ -1,0 +1,153 @@
+Conclusiones
+
+Se han corrido todos los filtros tanto en C como en ASM con distintas imágenes para comparar la performance.
+El proceso consistió en correr cada filtro en cada implementación con cada imagen unas cuarenta veces.
+La cátedra nos provió de un método para contar la cantidad de ciclos que cuesta correr n veces un filtro con una imagen dada. De los datos
+obtenidos por este método, se consideraron la cantidad de ciclos consumidos de una función, el tamaño (cantidad de píxeles) de la imagen
+que estaba siendo procesada y el promedio de ciclos que se utilizó para procesar cada píxel.
+Los dos valores que más se utilizaron para calcular la performance de las implementaciones fueron: fueron el promedio de los promedios de ciclos por píxel y
+el promedio del total de ciclos por total de píxeles. Esto es, para calcular el primer valor, lo que se hizo fue para cada imagen se calculó en promedio
+cuánto ciclos tomó cada píxel. Para ello, se tomó la cantidad de ciclos totales que tomó procesar la imagen y se lo dividió por la cantidad de píxeles
+que poseía la imagen original. Luego se promediaron todos estos valores obtenidos. Para el segundo valor, se tomó la suma de la cantidad de ciclos
+que tardó en procesar todas las imágenes y se la dividió por la cantidad de píxeles procesados en total.
+Estos valores son, quizás, los que más sencillamente nos dan una idea de cuán rápido se aplica un filtro sobre una imagen y nos permiten ver rápidamente
+cómo se comparan unos con otros.
+Fue este el método que se utilizó para generar los resultados.
+
+Las conclusiones generales son que las implementaciones en ASM fueron significativamente más eficientes que las implementaciones en C.
+
+Cuando querramos comprar las implementaciones entre C y ASM, hay dos factores fuertes para observar:
+
+1. Los accesos a memoria
+2. El uso de las instrucciones SSE.
+
+Sobre el punto 1. Los filtros en ASM para la lectura en general acceden de a 128 bits a memoria, mientras que los filtros en C varían, pero suelen traer
+de a 8 o 32 bits. Esto implica que cada vez que se realizan distintas iteraciones la cantidad de accesos a memoria termina siendo inferior en los filtros
+en ASM. Algo semejante sucede con el momento de escribir los resultados. La copia de los datos suele ser de a 128 bits en ASM y de a 8 o 32 bits en C.
+Este es, probablemente, uno de los hechos que generará grandes diferencias en el rendimiento.
+
+Sobre el punto 2, quizás el más importante. En ASM se traen una mayor cantidad de datos por el hecho de que muchos de ellos serán procesados simultáneamente.
+Mientras que, en general, en C se debe trabajar pixel a pixel y canal a canal, en ASM puede llegar a procesarse varios píxeles y todos sus canales al mismo
+tiempo.
+
+La principal razón para sospechar que el punto 2. es más influyente que el 1. es que los procesadores modernos de Intel se "adelanta" a los posibles lugares
+de memoria a los que la aplicación podrá querer, permitiendo evitar misses en cache. Sin embargo, lo que es cierto, es que la combinación de ambos puntos
+es la que terminará generando una gran diferencia entre ambas implementaciones.
+
+Los detalles del análisis a continuación.
+
+Veamos primero las comparaciones entre ASM y C para cada filtro.
+
+Rotar
+
+Rotar es un filtro relativamente sencillo. En ASM la ventaja es que se procesan 4 píxeles simultáneamente. Basicamente el proceso se hace en una
+instrucción SSE, mientras que el resto está relacionado con los movimientos en memoria. En C, en cada iteración se procesa un único píxel y tal
+proceso está hecho en varias instrucciones, manejando los canales de forma independiente. Así los resultados pueden leerse de la siguiente manera:
+
+En promedio se tardaron en ASM 3.4 ciclos por pixel, mientras que en C se tomaron 41.1 ciclos por píxel. Este resultado es el que se obtiene si se
+realiza el promedio de los promedios. Por el contrario, si se considera la cantidad de píxeles procesados en total y la cantidad de ciclos que tomó,
+el promedio pasa a ser de 3.8 ciclos por píxel en ASM, mientras que en C se mantiene en 41.1
+
+Resulta, por lo tanto, que la implementación en ASM es 10.8 veces más rápida que la de C.
+
+Smalltiles
+
+En ASM por cada iteración completamos 16 píxeles de la imagen destino, mientras que sólo 4 en C. Al mismo tiempo, los accesos a memoria en la implementación
+en ASM son de 128 y 64 bits, mientras que los de C son siempre de 8 bits. Estos dos hechos probablemente hayan sido los que más afectaron la diferencia en
+el tiempo de ejecución de cada filtro.
+
+En este caso, los promedios en ASM fueron de 3.0 (promedio de promedios) y 3.2 (ciclos totales / píxeles totales), mientras que en C fueron de 49.2 y 50.5
+
+El radio entre ambos es de 15.8
+
+Blit
+
+En la implementación de C se utilizó memcpy para copiar toda la imagen inicial. Este hecho seguramene resultó más eficiente que copiar caracter a caracter.
+La implementación de memcpy muy probablemente compita con las copias realizadas utilizando movdqa. Por lo que es probable que la diferencia de los filtros
+esté en la parte en que se copia el blit. Allí la implementación en ASM permite revisar varios píxeles a la vez si alguno es magenta y copiar los correspondientes
+en paralelo, mientras que la implementación en C debe revisar pixel a pixel, canal a canal, viendo si alguno es o no magenta. Otra diferencia puede ser que la
+llamada a memcpy para copiar un único pixel genere un overhead innecesario.
+
+Comparemos los resultados entre ambas implementaciones y veamos cómo estos estuvieron más peleados.
+
+En ASM se tardó en promedio 3.4 y 3.7 ciclos por píxel, promedio de promedios y ciclos totales / píxeles totales respectivamente (siempre se pondrán en este orden). En C los resultados fueron 7.4 y 5.8. El detalle en la implementación en C es que cuando la imagen a procesar tiene un tamaño semejante a la imagen de blit, gran parte del tiempo se dedica exclusivamente al blit. Por el contrario, cuando la imagen es muy grande en comparación con el blit, las implementaciones en C y ASM se asemejan mucho más.
+Por ejemplo, procesar las imágenes de bosque en 256x256 y 4000x3000 40 veces tomó 3450512 y 1781885428 de ciclos en ASM. En C tomó 17441604 y 2042159292 ciclos.
+Es decir, mientras que procesar la imagen de 256x256 se tomó un 400% de tiempo adicional en C, procesar la de 4000x3000 tan sólo tomó un 17% de tiempo extra.
+De hecho, si lo que se observa es la diferencia en ciclos necesitados entre correr la versión en C y la versión en ASM, independientemente del tamaño de la
+imagen, la diferencia es muy parecida a 210000000 ciclos en todas las imágenes independiente del tamaño. Esta probablemente sea una buena aproximación de la 
+diferencia en procesar la imagen de Perón en una y otra implementación.
+
+Monocromatizar
+
+Monocromatizar es el primer filtro que en su ciclo principal agrega una lógica interesante. Las implementaciones en ASM de todos los filtros anteriores tenían una complejidad semejante. Esto, probablemente, se debera a que la mayor parte del tiempo en todas esa funciones estaba dedicado a traer y devolver cosas a memoria.
+En monocromatizar, sin embargo, ya el ciclo principal agrega una buena parte de tiempo a la función. Si bien se mantiene leve, ya definitivamente una aseveración
+como la anterior, que la mayor parte del tiempo esta dedicada a copiarse cosas de una parte de la memoria a otra, ya no puede ser hecha con tanta sencillez.
+Adicionalmente, monocromatizar también utiliza operaciones con puntos flotantes.
+Nuevamente, en ASM se procesar 8 píxeles por iteración, mientras que en C sólo se procesar un pixel a la vez (aunque esta vez, sólo la copia de la información del canal se hace una a una, mientras que el cálculo del gris se realiza una única vez para todos los canales).
+
+Las diferencias entre ambas implementaciones vuelve a ser muy notoria. En ASM se tienen unos 5.2 y 5.4 ciclos por píxel, mientras que la de C se tomó 
+unos 50.2 en ambos casos.
+
+Sepia
+
+Este filtro es interesantemente parecido a monocromatizar. Tal es así que las implementaciones en ASM son muy semejantes. La cantidad de instrucciones de ASM en el ciclo de sepia, salvo las de copiar a memoria, pasó de las 21 de monocromatizar a 29. En una proporción semejante se agrandó el tiempo en que se 
+procesa sepa: 7.2 ciclos por píxel en ASM en ambos casos. Un incremento del cerca del 35%. Un crecimiento semejante tuvo la implementación en C, que pasó de 
+50.2 a 65.7 y 65.1.
+
+TODO : decir algo interesante sobre esto
+
+Scale 2x
+
+Scale 2x es un filtro que ha destacado. Mientras que la lógica del ciclo en ASM es relativamente compleja, al utilizarse sólo un cuarto de la imagen original
+para calcular la imagen final, un buen ciclo en ASM tiene la capacidad de sorprender. Lo interesante del asunto es que Scale 2x fue el filtro más rápido de todos
+los realizados en ASM. Mientras que la versión en C resultó ser particularmente lenta. Esto probablemente se deba a que en asm, una vez traída la información de 
+la memoria, se procedió a procesar simultáneamente bastante lógica en relativamente pocas instrucciones. El filtro en C, sin embargo, tuvo un cuerpo interesante
+para terminar procesando de a un píxel a la vez.
+
+Los resultados dicen bastante por sí solos: en ASM se tomó 2.9 y 3.0 ciclos para procesar cada pixel y en C se tomó 125 y 124. Una diferencia gigantezca.
+
+Blur
+
+Es el filtro en donde más se nota la diferencia de performance entre las distintas tecnologías. En promedio, para cada píxel se utilizan 26 ciclos de procesador en asm y casi 300 en C. De todos los filtros, este es el más pesado, tanto en acceso a Datos como en procesamiento requerido. Por un lado, para procesar cada píxel, se requieren traer 13 píxeles en total de memoria, lo cual con SIMD se puede resumir en menos de 6 movdqus. Por otro lado, hay que realizar bastantes cuentas para cada píxel, siendo estas altamente paralelizables, llegamos a poder procesar de a 4 píxeles en simultáneo. 
+
+No obstante, somos conscientes que nuestra implementación en C es subóptima, ya que no aprovecha los valores calculados previamente. De esta forma podría mejorar su velocidad bastante al tener que hacer menos de la mitad de las cuentas y accesos a memoria.
+
+
+Edge
+
+Al tratarse de una imagen den blanco y negro y tener un único canal, este filtro debe lidiar con menos memoria que los demás a un tamaño de imagen fijo.
+Adicionalmente, como la versión en ASM procesa de a 14 píxeles por iteración, los accesos a memoria no fueron alineados.
+Así y todo, aún siendo un filtro más complejo que rotar y utilizando accesos desalineados, al tener que trabajarse con menos memoria se logró
+un rendimiento semejante.
+El cuerpo de la implementación en ASM es bastante grande. Hay mucho para desempaquetar, shiftear, pasar a punto flotante, sumar, multiplicar, empaquetar...
+En C la implementación es bastante straightforward, procesándose un píxel a la vez.
+Otro detalle es que la versión de ASM tuvo ciertas optimizaciones como: dos valores que debían multiplicarse por un mismo coeficiente y luego sumarse, primero
+se sumaro y luego se multiplicaron. En C este tipo de optimizaciones se dejó a criterio del compilador.
+
+Los resultados son impresionantes. En ASM los promedios dieron de 3.8 ciclos por píxel en ambos casos y en C dieron de 78 y 77. Siendo el de ASM unas
+20 veces más veloz que el de C.
+
+
+
+
+
+
+INFORME EDGE:
+
+Para realizar la nueva versión de Edge utilizamos punto flotante para las multiplicaciones por 0.5. 
+El filtro se aplica de la siguiente forma:
+ - Se copian 16 bytes de las 3 filas necesarias a registros (xmm0, 1 y 2). 
+ - De las filas superior e inferior, se suman los valores de las esquinas (shifteando correspondientemente y desempaquetando a word para no perder precisión). También se suman los valores de la columna central. 
+ - Los dos registros que tienen la suma de las esquinas para cada píxel, se desempaquetan a 32 bits y se convierten a floats de precisión simple, luego se los multiplica por 0.5.
+ - Se los vuelve a convertir a enteros de 16 bits, y se los suma a los valores de la columna central. De esta forma, obtenemos, en dos registros, la suma de las filas superior e inferior multiplicando cada valor por la constante indicada. 
+ - De la fila del medio se multiplica la columna del medio por -6 (restando su valor 6 veces a un registro en 0). Luego se le suman la columna de la derecha y la de la izquierda. 
+
+Todo esto se realiza en paralelo procesando de a 14 píxeles por cada acceso a memoria. 
+
+Alineación vs no alineación
+
+Otro análisis que se hizo fue el de comparar la implementación de filtros utilizando movdqa vs movdqu. Los resultados fueron completamente inesperados:
+La diferencia en performance entre ambos casos fue apenas notable. El filtro que se decidió tomar como ejemplo fue el filtro rotar, y los resultados
+fueron que la implementación utilizando movdqu fue un 2.5% más lenta que la que utiliza movdqa. Probablemente que la diferencia sea pequeña se deba a
+que el procesador realiza optimizaciones para el acceso a secciones consecutivas en la memoria haciendo que no haya cambios significativos en estos casos.
+Más pruebas harían falta para comparar esos puntos. Lo que sí, cuando cada ciclo cuenta, un 2.5% puede ser una taza interesante para ahorrarse.

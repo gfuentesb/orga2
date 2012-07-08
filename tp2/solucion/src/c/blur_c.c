@@ -7,6 +7,7 @@ void blur_c (unsigned char *src, unsigned char *dst, int h, int w, int src_row_s
 
     unsigned int dstrow = 0;
     int y = 2;
+    dstrow += dst_row_size * 2;
 
     while (y < h - 2) {
 
@@ -22,7 +23,7 @@ void blur_c (unsigned char *src, unsigned char *dst, int h, int w, int src_row_s
         }
 
         dstrow += dst_row_size;
-        y += 1;
+        y++;
     }
 }
 
