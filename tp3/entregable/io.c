@@ -24,6 +24,8 @@
 #define COLOR_LBROWN 8 + COLOR_BROWN
 #define COLOR_LWHITE 8 + COLOR_GRAY
 
+void tohex(char *buf, int n);
+
 void clean_screen() {
     v_char ch = {
                     .ch = '\0',
@@ -83,7 +85,7 @@ void black_screen() {
     }
 }
 
-void print_registers(int cr0, int cr2, int cr3, int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp, int esp) {
+void print_registers(struct registers_struct rs, int template) {
     int i = 0;
     v_char ch = {
                     .ch = 0,
@@ -91,17 +93,33 @@ void print_registers(int cr0, int cr2, int cr3, int eax, int ebx, int ecx, int e
                     .fg_color = COLOR_LWHITE,
                     .blink = 0
                 };
-    ch.ch = '0' + eax;
-    print_char(ch, 0, i++);
-    ch.ch = '0' + ebx;
-    print_char(ch, 0, i++);
-    ch.ch = '0' + ecx;
-    print_char(ch, 0, i++);
-    ch.ch = '0' + edx;
-    print_char(ch, 0, i++);
-    ch.ch = '0' + esi;
-    print_char(ch, 0, i++);
-    ch.ch = '0' + edi;
-    print_char(ch, 0, i++);
-
 }
+
+void tohex(char *buf, unsigned int n) {
+    while (n > 0) {
+        int i = n % 16;
+        if (i < 10) {
+            buf++ = '0' + i;
+        } else {
+            buf++ = 'a' + i - 10;
+        }
+        n /= 16;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

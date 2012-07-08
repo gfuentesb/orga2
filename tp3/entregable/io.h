@@ -1,3 +1,24 @@
+struct registers_struct {
+    int cs;
+    int ds;
+    int es;
+    int fs;
+    int gs;
+    int ss;
+    int cr0;
+    int cr2;
+    int cr3;
+    int cr4;
+    int eflags;
+    int edi;
+    int esi;
+    int ebp;
+    int esp;
+    int ebx;
+    int edx;
+    int ecx;
+    int eax;
+} __attribute__((__packed__, aligned (4)));
 
 typedef struct t_char {
     char ch;
@@ -9,4 +30,4 @@ typedef struct t_char {
 void clean_screen();
 void black_screen();
 void print_char(v_char ch, unsigned int row, unsigned int col);
-void print_registers(int cr0, int cr2, int cr3, int eax, int ebx, int ecx, int edx, int esi, int edi, int ebp, int esp);
+void print_exception(int t, struct registers_struct rs);
