@@ -47,8 +47,21 @@ static char *exception_titles[] = {
     "SIMD Floating Point Exception"
 };
 
+static const int REGISTERS_COLUMN = 10;
+static const int SEGMENTS_COLUMN = 30;
+static const int STACK_COLUMN = 25;
+static const int BACKTRACE_COLUMN = 45;
+static const v_char d_ch = {
+                    .ch = 0,
+                    .bg_color = COLOR_BLACK,
+                    .fg_color = COLOR_LWHITE,
+                    .blink = 0
+                };
+
 static void print_string(char *str, v_char format, int row, int column);
+static void print_register_template();
 static void tohex(char *buf, unsigned int n);
+static void print_registers(struct registers_struct *rs);
 
 void clean_screen() {
     v_char ch = {
@@ -118,27 +131,109 @@ void print_string(char *str, v_char format, int row, int column) {
     }
 }
 
+
+void print_register_template() {
+    v_char ch =  d_ch;
+    
+
+    print_string("EAX", ch, 4, 2);
+    print_string("EBX", ch, 5, 2);
+    print_string("ECX", ch, 6, 2);
+    print_string("EDX", ch, 7, 2);
+    print_string("ESI", ch, 8, 2);
+    print_string("EDI", ch, 9, 2);
+    print_string("EBP", ch, 10, 2);
+    print_string("ESP", ch, 11, 2);
+
+    char number[10] = {0};
+    tohex(number, 0);
+
+    int i = 0;
+    for (i = 4; i < 12; i++) {
+        print_string(number, ch, i , REGISTERS_COLUMN);
+    }
+
+    print_string("CS", ch, 4, 25);
+    print_string("DS", ch, 5, 25);
+    print_string("ES", ch, 6, 25);
+    print_string("FS", ch, 7, 25);
+    print_string("GS", ch, 8, 25);
+    print_string("SS", ch, 9, 25);
+
+    for (i = 4; i < 10; i++) {
+        print_string(number, ch, i , SEGMENTS_COLUMN);
+    }
+
+    print_string("CR0", ch, 13, 2);
+    print_string("CR2", ch, 14, 2);
+    print_string("CR3", ch, 15, 2);
+    print_string("CR4", ch, 16, 2);
+
+    for (i = 13; i < 17; i++) {
+        print_string(number, ch, i , REGISTERS_COLUMN);
+    }
+
+    print_string("EFLAGS", ch, 18, 2);
+    print_string(number, ch, 18 , REGISTERS_COLUMN);
+
+    print_string("stack", ch, 11, 25);
+    print_string("backtrace", ch, 11, 43);
+    
+}
+
 void print_exception(int t, struct registers_struct rs) {
-    v_char ch = {
-                    .ch = 0,
-                    .bg_color = COLOR_BLACK,
-                    .fg_color = COLOR_LWHITE,
-                    .blink = 0
-                };
 
     black_screen();
-    char number[20] = {0};
-    tohex(number, t);
-    print_string(number, ch, 1, 1);
-    tohex(number, rs.eax);
-    print_string(number, ch, 2, 1);
-    tohex(number, rs.ebx);
-    print_string(number, ch, 3, 1);
-    tohex(number, rs.ecx);
-    print_string(number, ch, 4, 1);
-    tohex(number, rs.edx);
-    print_string(number, ch, 5, 1);
+
+    print_string(exception_titles[t], d_ch , 1, 0);
+    print_register_template();
+    print_registers(&rs);
 }
+
+void print_registers(struct registers_struct *rs) {
+    char number[9] = {0};
+
+    tohex(number, rs->eax);
+    print_string(number, d_ch, 4, REGISTERS_COLUMN);
+    tohex(number, rs->ebx);
+    print_string(number, d_ch, 5, REGISTERS_COLUMN);
+    tohex(number, rs->ecx);
+    print_string(number, d_ch, 6, REGISTERS_COLUMN);
+    tohex(number, rs->edx);
+    print_string(number, d_ch, 7, REGISTERS_COLUMN);
+    tohex(number, rs->esi);
+    print_string(number, d_ch, 8, REGISTERS_COLUMN);
+    tohex(number, rs->edi);
+    print_string(number, d_ch, 9, REGISTERS_COLUMN);
+    tohex(number, rs->ebp);
+    print_string(number, d_ch, 10, REGISTERS_COLUMN);
+    tohex(number, rs->esp);
+    print_string(number, d_ch, 11, REGISTERS_COLUMN);
+
+    tohex(number, rs->cs);
+    print_string(number, d_ch, 4, SEGMENTS_COLUMN);
+    tohex(number, rs->ds);
+    print_string(number, d_ch, 5, SEGMENTS_COLUMN);
+    tohex(number, rs->es);
+    print_string(number, d_ch, 6, SEGMENTS_COLUMN);
+    tohex(number, rs->fs);
+    print_string(number, d_ch, 7, SEGMENTS_COLUMN);
+    tohex(number, rs->gs);
+    print_string(number, d_ch, 8, SEGMENTS_COLUMN);
+    tohex(number, rs->ss);
+    print_string(number, d_ch, 9, SEGMENTS_COLUMN);
+    tohex(number, rs->cr0);
+    print_string(number, d_ch, 13, REGISTERS_COLUMN);
+    tohex(number, rs->cr2);
+    print_string(number, d_ch, 14, REGISTERS_COLUMN);
+    tohex(number, rs->cr3);
+    print_string(number, d_ch, 15, REGISTERS_COLUMN);
+    tohex(number, rs->cr4);
+    print_string(number, d_ch, 16, REGISTERS_COLUMN);
+    tohex(number, rs->eflags);
+    print_string(number, d_ch, 18, REGISTERS_COLUMN);
+}
+
 
 void tohex(char *buf, unsigned int n) {
     int i;
