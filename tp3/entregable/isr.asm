@@ -15,7 +15,7 @@ BITS 32
 extern fin_intr_pic1
 extern print_char
 extern black_screen
-extern print_registers
+extern print_exception
 
 global _isr0
 global _isr1
@@ -61,6 +61,8 @@ global _isr19
     push dword %1
     call print_exception
     add esp, 4
+
+    xchg bx, bx
 %endmacro
 
 
@@ -82,6 +84,10 @@ _isr6:
 _isr7:
     imprimir_template 7
 _isr8:
+    mov eax, 0
+    mov ebx, 1
+    mov ecx, 2
+    mov edx, 3
     imprimir_template 8
 _isr9:
     imprimir_template 9

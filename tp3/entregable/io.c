@@ -24,7 +24,32 @@
 #define COLOR_LBROWN 8 + COLOR_BROWN
 #define COLOR_LWHITE 8 + COLOR_GRAY
 
-void tohex(char *buf, int n);
+
+static char *exception_titles[] = {
+    "Divide Error\n",
+    "Debug\n",
+    "Non-Maskable Interrupt\n",
+    "Breakpoint\n",
+    "Overflow\n",
+    "BOUND Range Exceeded\n",
+    "Invalid Opcode\n",
+    "Device Not Available\n",
+    "Double Fault\n",
+    "Coprocessor Segment Overrun\n",
+    "Invalid TSS\n",
+    "Segment Not Present\n",
+    "Stack Segment Error\n",
+    "General Protection Error\n",
+    "Page Fault\n",
+    "Reserved Exception\n",
+    "Floating Point Error\n",
+    "Aligment Check\n",
+    "Machine Check\n",
+    "SIMD Floating Point Exception\n"
+};
+
+static void print_string(char *str, v_char format)
+static void tohex(char *buf, unsigned int n);
 
 void clean_screen() {
     v_char ch = {
@@ -85,26 +110,55 @@ void black_screen() {
     }
 }
 
-void print_registers(struct registers_struct rs, int template) {
-    int i = 0;
+
+void print_string(char *str, v_char format) {
+    static int fila = 10;
+
+    int columna = 10;
+    while (*str != 0) {
+        format.ch = *str++;
+        print_char(format, fila, columna);
+        columna++;
+    }
+    fila++;
+}
+
+void print_exception(int t, struct registers_struct rs) {
     v_char ch = {
                     .ch = 0,
                     .bg_color = COLOR_BLACK,
                     .fg_color = COLOR_LWHITE,
                     .blink = 0
                 };
+
+    black_screen();
+    char number[10] = {0};
+    tohex(number, t);
+    print_string(number, ch);
+    tohex(number, rs.eax);
+    print_string(number, ch);
+    tohex(number, rs.ebx);
+    print_string(number, ch);
+    tohex(number, rs.ecx);
+    print_string(number, ch);
+    tohex(number, rs.edx);
+    print_string(number, ch);
 }
 
 void tohex(char *buf, unsigned int n) {
+    if (n == 0) {
+        *(buf++) = '0';
+    }
     while (n > 0) {
         int i = n % 16;
         if (i < 10) {
-            buf++ = '0' + i;
+            *(buf++) = '0' + i;
         } else {
-            buf++ = 'a' + i - 10;
+            *(buf++) = 'a' + i - 10;
         }
         n /= 16;
     }
+    *buf = '\0';
 }
 
 
