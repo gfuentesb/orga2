@@ -22,4 +22,34 @@
 
 ; /* COMPLETAR */
 
+typedef struct str_pdirectory_entry {
+    unsigned char p:1;
+    unsigned char r:1;
+    unsigned char u:1;
+    unsigned char w:1;
+    unsigned char d:1;
+    unsigned char a:1;
+    unsigned char o:1;
+    unsigned char s:1;
+    unsigned char g:1;
+    unsigned char available:3;
+    unsigned int addr:20;
+} __attribute__((__packed__, aligned (8))) pdirectory_entry;
+
+typedef struct str_ptable_entry {
+    unsigned char p:1;
+    unsigned char r:1;
+    unsigned char u:1;
+    unsigned char w:1;
+    unsigned char c:1;
+    unsigned char a:1;
+    unsigned char d:1;
+    unsigned char o:1;
+    unsigned char g:1;
+    unsigned char available:3;
+    unsigned int addr:20;
+} __attribute__((__packed__, aligned (8))) ptable_entry;
+
+void init_mmu();
+
 #endif
