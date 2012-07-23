@@ -34,7 +34,7 @@ typedef struct str_pdirectory_entry {
     unsigned char g:1;
     unsigned char available:3;
     unsigned int addr:20;
-} __attribute__((__packed__, aligned (8))) pdirectory_entry;
+} __attribute__((__packed__, aligned (4))) pdirectory_entry;
 
 typedef struct str_ptable_entry {
     unsigned char p:1;
@@ -48,7 +48,7 @@ typedef struct str_ptable_entry {
     unsigned char g:1;
     unsigned char available:3;
     unsigned int addr:20;
-} __attribute__((__packed__, aligned (8))) ptable_entry;
+} __attribute__((__packed__, aligned (4))) ptable_entry;
 
 void init_mmu();
 

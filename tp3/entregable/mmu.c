@@ -41,6 +41,16 @@ void empty_table(ptable_entry *pte) {
     int i;
     for (i = 0; i < 1024; i++) {
         pte[i].p = 0;
+        pte[i].r = 0;
+        pte[i].u = 0;
+        pte[i].w = 0;
+        pte[i].c = 0;
+        pte[i].a = 0;
+        pte[i].d = 0;
+        pte[i].o = 0;
+        pte[i].g = 0;
+        pte[i].available = 0;
+        pte[i].addr = 0;
     }
 }
 
