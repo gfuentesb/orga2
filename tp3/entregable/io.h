@@ -32,3 +32,4 @@ void black_screen();
 void print_char(v_char ch, unsigned int row, unsigned int col);
 void print_exception(int t, struct registers_struct rs);
 void print_the_name();
+int is_digit(char c);

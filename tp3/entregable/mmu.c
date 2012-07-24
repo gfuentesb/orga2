@@ -6,14 +6,60 @@
 */
 
 #include "mmu.h"
+#include "io.h"
 #include "i386.h"
 
 pdirectory_entry *directory = 0x21000;
 ptable_entry *table = 0x22000;
 
-void clean_pdir_entry(pdirectory_entry *pde);
-pdirectory_entry empty_pdir_entry();
-void empty_table(ptable_entry *pte);
+v_char *mmu = MMU_MAP_INIT;
+v_char *mmu_task = MMU_MAP_INIT_T;
+
+static void clean_pdir_entry(pdirectory_entry *pde);
+static pdirectory_entry empty_pdir_entry();
+static void empty_table(ptable_entry *pte);
+static unsigned int next_free_page(v_char *mmu);
+
+
+static unsigned int next_free_page(v_char *mmu) {
+    int i = 0;
+    while (is_digit(mmu[i].ch)) i++;
+
+    return i;
+}
+
+unsigned int malloc_page_K(unsigned int pid) {
+    int i = next_free_page(mmu);
+    mmu[i].ch = '0' + pid;
+    mmu_task[i].bg_color = 3;
+
+    return INICIO_PAGINAS_LIBRES_K + i * TAMANO_PAGINA ;
+}
+
+unsigned int malloc_page_T(unsigned int pid) {
+    int i = next_free_page(mmu_task);
+    mmu_task[i].ch = '0' + pid;
+    mmu_task[i].bg_color = 9;
+
+    return INICIO_PAGINAS_LIBRES_T + i * TAMANO_PAGINA ;
+}
+
+
+void free_page_K(unsigned int dir) {
+    int i = dir - INICIO_PAGINAS_LIBRES_K;
+    i /= TAMANO_PAGINA;
+
+    mmu[i].ch = 0;
+    mmu[i].bg = COLOR_GRAY;
+}
+
+void free_page_T(unsigned int dir) {
+    int i = dir - INICIO_PAGINAS_LIBRES_T;
+    i /= TAMANO_PAGINA;
+
+    mmu_task[i].ch = 0;
+    mmu_task[i].bg = COLOR_GRAY;
+}
 
 void init_mmu() {
     int i;
@@ -86,3 +132,5 @@ void clean_pdir_entry(pdirectory_entry *pde) {
     pde->available = 0;
     pde->addr = 0;
 }
+
+

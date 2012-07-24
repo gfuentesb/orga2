@@ -52,4 +52,10 @@ typedef struct str_ptable_entry {
 
 void init_mmu();
 
+unsigned int malloc_page_K(unsigned int pid);
+unsigned int malloc_page_T(unsigned int pid);
+
+void free_page_K(unsigned int dir);
+void free_page_T(unsigned int dir);
+
 #endif

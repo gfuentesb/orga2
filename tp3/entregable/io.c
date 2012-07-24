@@ -292,3 +292,7 @@ void print_the_name() {
     ch.blink = 0;
     print_string("El señor de los novillos", ch, 24, 30);
 }
+
+int is_digit(char c) {
+    return (c >= '0') ? c <= '9' : 0;
+}
