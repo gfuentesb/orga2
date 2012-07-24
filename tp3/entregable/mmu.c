@@ -32,7 +32,7 @@ void init_mmu() {
     }
     directory[0] = empty_pdir_entry(table);
     ptable_entry *entry = directory[0].addr << 12;
-    for (i = 0; i < 0x1A; i++) {
+    for (i = 0; i < 0x1A0; i++) {
         ptable_entry *curr_entry = &entry[i];
         curr_entry->p = 1;
         curr_entry->r = 1;

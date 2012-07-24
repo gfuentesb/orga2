@@ -290,5 +290,5 @@ void print_the_name() {
     ch.bg_color = COLOR_GRAY;
     ch.fg_color = COLOR_BLACK;
     ch.blink = 0;
-    print_string("El señor de los novillos", ch, 25, 30);
+    print_string("El señor de los novillos", ch, 24, 30);
 }

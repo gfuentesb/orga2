@@ -46,6 +46,7 @@ global _isr19
 %endmacro
 
 %macro imprimir_template 1
+    xchg bx, bx
     pushad
     pushfd
     push_val cr4
@@ -61,8 +62,7 @@ global _isr19
     push dword %1
     call print_exception
     add esp, 4
-
-    xchg bx, bx
+    ret
 %endmacro
 
 
