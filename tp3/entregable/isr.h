@@ -29,7 +29,11 @@ void _isr17();
 void _isr18();
 void _isr19();
 
-
-/* COMPLETAR */
+void _isr32();
+void _isr33();
+void _isr36();
+void atender_teclado(unsigned char scancode);
 
 #endif // __ISR_H__
+
+

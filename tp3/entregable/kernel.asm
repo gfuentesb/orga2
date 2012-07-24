@@ -116,8 +116,12 @@ modo_protegido:
         or eax, 0x80000000 ; Habilitar la paginación
         mov cr0, eax
 
-        call print_the_name
+        ;reprogramar y habilitar el PIC
+        call resetear_pic
+        call habilitar_pic
 
+        call print_the_name
+        sti
 		jmp $
 
 %include "a20.asm"

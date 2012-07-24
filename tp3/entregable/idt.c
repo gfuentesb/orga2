@@ -39,6 +39,11 @@ void inicializar_idt() {
     IDT_ENTRY(17);
     IDT_ENTRY(18);
     IDT_ENTRY(19);
+
+
+    IDT_ENTRY(32); //Clock
+    IDT_ENTRY(33); //Keyboard
+    IDT_ENTRY(36); //Interrupción 36
 }
 
 idt_entry idt[255] = {};

@@ -10,7 +10,7 @@ KERNEL_OBJ=kernel.o
 KERNEL_BIN=kernel.bin
 
 DEPEND=kernel.asm macrosmodoreal.mac macrosmodoprotegido.mac gdt.c pic.c idt.c isr.asm tss.c mmu.c util.c Makefile gdt.h pic.h idt.h isr.h tss.h mmu.h sched.h io.h util.h
-OBJ= $(KERNEL_OBJ)  gdt.o pic.o idt.o isr.o mmu.o sched.o tss.o io.o io_asm.o util.o
+OBJ= $(KERNEL_OBJ)  gdt.o pic.o idt.o isr.o mmu.o sched.o tss.o io.o io_asm.o util.o isr_asm.o
 DISK_IMG=diskette.img
 
 CFLAGS=-m32 -g -ggdb -Wall -O0 \
@@ -35,7 +35,7 @@ all: image clean
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^
 
-io_asm.o: io.asm
+%_asm.o: %.asm
 	$(NASM) $(NASMFLAGS) -o $@ $^
 
 %.o: %.asm

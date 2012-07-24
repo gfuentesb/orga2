@@ -16,6 +16,7 @@ extern fin_intr_pic1
 extern print_char
 extern black_screen
 extern print_exception
+extern atender_teclado
 
 global _isr0
 global _isr1
@@ -37,6 +38,10 @@ global _isr16
 global _isr17
 global _isr18
 global _isr19
+global _isr32
+global _isr33
+global _isr36
+
 
 %macro push_val 1
     xor eax, eax
@@ -112,8 +117,34 @@ _isr18:
 _isr19:
     imprimir_template 19
 
+_isr33:
+    cli
+    pushad
 
-proximo_reloj:
+    ;informo al pic que se atendio la interrupcion
+    mov dx,0x20
+    mov al,0x20
+    out dx,al
+
+    ;leer del teclado
+    xor eax, eax
+    in al, 0x60
+
+    push eax
+    call atender_teclado
+    add esp, 4
+
+    popad
+    iret
+
+_isr36:
+    cli
+    mov eax, 46
+
+    iret
+
+_isr32:
+    cli
 	pushad
 	inc DWORD [isrnumero]
 	mov ebx, [isrnumero]
@@ -127,7 +158,8 @@ proximo_reloj:
 		IMPRIMIR_TEXTO edx, 6, 0x4f, 24, 73
 		IMPRIMIR_TEXTO ebx, 1, 0x4f, 24, 79
 	popad
-	ret
+	sli
+    ret
 	
 isrmensaje: db 'Clock:'
 isrnumero: dd 0x00000000
@@ -135,6 +167,3 @@ isrmensaje1: db '|'
 isrmensaje2: db '/'
 isrmensaje3: db '-'
 isrmensaje4: db '\'
-
-
-
