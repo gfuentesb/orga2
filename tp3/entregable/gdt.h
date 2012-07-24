@@ -33,5 +33,6 @@ typedef struct str_gdt_entry {
 extern gdt_entry gdt[];
 extern gdt_descriptor GDT_DESC;
 
+
 #define GDT_COUNT 128
 #endif //__GDT_H__

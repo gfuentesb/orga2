@@ -18,6 +18,11 @@
 #define TASK7         0x19000
 #define TASK8         0x1A000
 
+/**
+ * Retorna un puntero al TSS a partir del selector de su descriptor.
+ */
+#define GET_TSS(selector) ((tss *) GET_GDTE_BASE(selector))
+
 typedef struct str_tss {
 	unsigned short ptl;
 	unsigned short  unused0;
@@ -63,6 +68,8 @@ typedef struct str_tss {
 extern tss tsss[];
 extern tss tarea_inicial;
 extern tss tarea_idle;
+
+gdt_entry *load_tss(int i);
 
 #define TSS_COUNT 8
 #endif //__TSS_H__

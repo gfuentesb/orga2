@@ -59,6 +59,22 @@ gdt_entry gdt[GDT_COUNT] = {
         .db = 1,
         .g = 0,
         .base_31_24 = 0
+    },
+    [10] = 
+    {
+        .limit_0_15 = 0x67,
+        .base_0_15 = 0x0,
+        .base_23_16 = 0x0,
+        .type = 0x9, // Inactive task
+        .s = 0,
+        .dpl = 0,
+        .p = 1,
+        .limit_16_19 = 0x0,
+        .avl = 0,
+        .l = 0,
+        .db = 1,
+        .g = 0,
+        .base_31_24 = 0
     }
 };
 
