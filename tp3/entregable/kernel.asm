@@ -107,7 +107,6 @@ modo_protegido:
         call clean_screen
         call inicializar_idt
         lidt [IDT_DESC]
-
         call init_mmu
 
         mov eax, 0x21000 ;Cargamos la pos del directorio de páginas en CR3
@@ -115,6 +114,8 @@ modo_protegido:
         mov eax, cr0
         or eax, 0x80000000 ; Habilitar la paginación
         mov cr0, eax
+
+        call print_the_name
 
 		jmp $
 
