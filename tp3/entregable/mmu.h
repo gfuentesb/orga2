@@ -58,4 +58,6 @@ unsigned int malloc_page_T(unsigned int pid);
 void free_page_K(unsigned int dir);
 void free_page_T(unsigned int dir);
 
+void mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica);
+
 #endif

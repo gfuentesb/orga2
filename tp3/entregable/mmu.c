@@ -152,3 +152,17 @@ void inicializar_dir_usuario() {
         pte[i].addr = i;
     }
 }
+
+void mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica) {
+    pdirectory_entry *pde = (pdirectory_entry*)cr3; 
+    if (virtual >> 22) {
+        return;
+    }
+    ptable_entry *pte = pde[0].addr << 12;
+    int index = (cr3 >> 12) & 0x3ff;
+    pte[index].addr = fisica >> 12;
+    pte[index].p = 1;
+    pte[index].r = 1;
+}
+    
+
