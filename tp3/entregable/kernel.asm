@@ -54,6 +54,7 @@ extern inicializar_idt
 
 extern resetear_pic
 extern habilitar_pic
+extern print_the_name
 
 extern chequear_A20
 extern clean_screen
@@ -107,19 +108,20 @@ modo_protegido:
         call clean_screen
         call inicializar_idt
         lidt [IDT_DESC]
-
-
         xchg bx, bx
-
         call init_mmu
-
-        xchg bx, bx
 
         mov eax, 0x21000
         mov cr3, eax
         mov eax, cr0
         or eax, 0x80000000
+        mov ecx, $
         mov cr0, eax
+        mov eax, 1
+        add eax, 2
+
+        xchg bx, bx
+        call print_the_name
 
 		jmp $
 

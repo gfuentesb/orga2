@@ -285,19 +285,10 @@ void tohex(char *buf, unsigned int n) {
     *(buf + i) = '\0';
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void print_the_name() {
+    v_char ch;
+    ch.bg_color = COLOR_GRAY;
+    ch.fg_color = COLOR_BLACK;
+    ch.blink = 0;
+    print_string("El señor de los novillos", ch, 25, 30);
+}

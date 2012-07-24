@@ -18,10 +18,21 @@ void empty_table(ptable_entry *pte);
 void init_mmu() {
     int i;
     for (i = 0; i < 1024; i++) {
-        directory[i] = empty_pdir_entry();
+        directory[i].p = 0;
+        directory[i].r = 0;
+        directory[i].u = 0;
+        directory[i].w = 0;
+        directory[i].d = 0;
+        directory[i].a = 0;
+        directory[i].o = 0;
+        directory[i].s = 0;
+        directory[i].g = 0;
+        directory[i].available = 0;
+        directory[i].addr = 0;
     }
+    directory[0] = empty_pdir_entry(table);
     ptable_entry *entry = directory[0].addr << 12;
-    for (i = 0; i < 20; i++) {
+    for (i = 0; i < 0x1A; i++) {
         ptable_entry *curr_entry = &entry[i];
         curr_entry->p = 1;
         curr_entry->r = 1;
@@ -54,13 +65,11 @@ void empty_table(ptable_entry *pte) {
     }
 }
 
-pdirectory_entry empty_pdir_entry() {
-    static ptable_entry *lpte = 0x22000;
+pdirectory_entry empty_pdir_entry(ptable_entry *lpte) {
     pdirectory_entry pde;
     empty_table(lpte);
     clean_pdir_entry(&pde);
     pde.addr = (unsigned int)lpte >> 12;
-    lpte += 1024;
     return pde;
 }
 
@@ -77,6 +86,3 @@ void clean_pdir_entry(pdirectory_entry *pde) {
     pde->available = 0;
     pde->addr = 0;
 }
-
-/* COMPLETAR */
-
