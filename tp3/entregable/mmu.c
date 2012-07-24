@@ -164,5 +164,15 @@ void mapear_pagina(unsigned int virtual, unsigned int cr3, unsigned int fisica) 
     pte[index].p = 1;
     pte[index].r = 1;
 }
-    
+
+void unmapear pagina(unsigned int virtual, unsigned int cr3) {
+    pdirectory_entry *pde = cr3;
+    if (virtual >> 22) {
+        return;
+    }
+    int index = (cr3 >> 12) & 0x3ff;
+    ptable_entry *pte = pde[0].addr << 12;
+    pte[index].p = 0;
+}
+
 
