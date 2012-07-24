@@ -146,6 +146,10 @@ _isr36:
 _isr32:
     cli
 	pushad
+
+    mov dx,0x20
+    mov al,0x20
+    out dx,al
 	inc DWORD [isrnumero]
 	mov ebx, [isrnumero]
 	cmp ebx, 0x4
@@ -158,8 +162,7 @@ _isr32:
 		IMPRIMIR_TEXTO edx, 6, 0x4f, 24, 73
 		IMPRIMIR_TEXTO ebx, 1, 0x4f, 24, 79
 	popad
-	sli
-    ret
+    iret
 	
 isrmensaje: db 'Clock:'
 isrnumero: dd 0x00000000
