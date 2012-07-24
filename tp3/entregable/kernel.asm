@@ -59,6 +59,7 @@ extern chequear_A20
 extern clean_screen
 
 extern exception
+extern print_the_name
 
 extern init_mmu
 ; PUNTO DE ENTRADA DEL KERNEL

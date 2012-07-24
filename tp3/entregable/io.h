@@ -1,3 +1,20 @@
+#define COLOR_BLACK 0
+#define COLOR_BLUE 1
+#define COLOR_GREEN 2
+#define COLOR_CYAN 3
+#define COLOR_RED 4
+#define COLOR_MAGENTA 5
+#define COLOR_BROWN 6
+#define COLOR_GRAY 7
+/* COLOR_L* are 4bits colors */
+#define COLOR_LBLUE 8 + COLOR_BLUE
+#define COLOR_LGREEN 8 + COLOR_GREEN
+#define COLOR_LCYAN 8 + COLOR_CYAN
+#define COLOR_LRED 8 + COLOR_RED
+#define COLOR_LMAGENTA 8 + COLOR_MAGENTA
+#define COLOR_LBROWN 8 + COLOR_BROWN
+#define COLOR_LWHITE 8 + COLOR_GRAY
+
 struct registers_struct {
     int cs;
     int ds;

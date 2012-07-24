@@ -50,7 +50,7 @@ void free_page_K(unsigned int dir) {
     i /= TAMANO_PAGINA;
 
     mmu[i].ch = 0;
-    mmu[i].bg = COLOR_GRAY;
+    mmu[i].bg_color = COLOR_GRAY;
 }
 
 void free_page_T(unsigned int dir) {
@@ -58,7 +58,7 @@ void free_page_T(unsigned int dir) {
     i /= TAMANO_PAGINA;
 
     mmu_task[i].ch = 0;
-    mmu_task[i].bg = COLOR_GRAY;
+    mmu_task[i].bg_color = COLOR_GRAY;
 }
 
 void init_mmu() {
@@ -133,4 +133,22 @@ void clean_pdir_entry(pdirectory_entry *pde) {
     pde->addr = 0;
 }
 
-
+void inicializar_dir_usuario() {
+    int i;
+    pdirectory_entry *pde = (pdirectory_entry*)malloc_page_K(0);
+    ptable_entry *pte = (ptable_entry*)malloc_page_K(0);
+    for (i = 0; i < 1024; i++) {
+        clean_pdir_entry(&pde[i]);
+        pde[i].p = 0;
+        pde[i].r = 0;
+    }
+    pde[0].p = 1;
+    pde[0].r = 1;
+    pde[0].addr = (unsigned int)pte >> 12;
+    empty_table(pte);
+    for (i = 0; i < 0x1a0; i++) {
+        pte[i].p = 1;
+        pte[i].r = 1;
+        pte[i].addr = i;
+    }
+}
