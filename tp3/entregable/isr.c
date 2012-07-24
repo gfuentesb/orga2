@@ -1,4 +1,5 @@
 #include "isr.h"
+#include "io.h"
 #include "i386.h"
 
 /**
@@ -264,6 +265,12 @@ static unsigned char scancodes_to_ascii[] = {
 };
 
 void atender_teclado(unsigned char scancode) {
-    breakpoint();
+    v_char ch = {
+                    .ch = scancodes_to_ascii[scancode],
+                    .bg_color = COLOR_BLACK,
+                    .fg_color = COLOR_GRAY,
+                    .blink = 0
+                };
+    print_char(ch, 24, 0);
 }
 
