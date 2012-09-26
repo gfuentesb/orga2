@@ -1,3 +1,10 @@
+#include "color.h"
+#include <limits.h>
+
+unsigned char saturar(unsigned int x) {
+    return (x > UCHAR_MAX) ? UCHAR_MAX : x;
+}
+
 void monocromatizar_uno_c (
 	unsigned char *src,
 	unsigned char *dst,
@@ -6,5 +13,16 @@ void monocromatizar_uno_c (
 	int src_row_size,
 	int dst_row_size
 ) {
-	// TODO: Implementar
+
+    for (int y = 0; y < h; y += 1) {
+        for (int x = 0; x < w; x += 1) {
+
+            int row_start = y * src_row_size;
+            unsigned char b = src[row_start + x * RGB_SIZE + RGB_BLUE_OFFSET];
+            unsigned char g = src[row_start + x * RGB_SIZE + RGB_GREEN_OFFSET];
+            unsigned char r = src[row_start + x * RGB_SIZE + RGB_RED_OFFSET];
+            
+           dst[y * dst_row_size + x] = saturar((r + 2 * g + b) / 4);
+        }
+    }
 }
