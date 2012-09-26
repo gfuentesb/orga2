@@ -1,0 +1,7 @@
+*.o
+*.out
+*~
+.*
+!.gitignore
+tp2
+bin
