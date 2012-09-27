@@ -1,7 +1,7 @@
 #include "color.h"
 #include <limits.h>
 
-unsigned char saturar(unsigned int x) {
+static inline unsigned char saturar(unsigned int x) {
     return (x > UCHAR_MAX) ? UCHAR_MAX : x;
 }
 
