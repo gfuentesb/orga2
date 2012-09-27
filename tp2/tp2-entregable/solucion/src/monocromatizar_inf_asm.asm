@@ -93,10 +93,9 @@ loop_y:
         pshufb xmm0, xmm3
 
         movq rax, xmm0
-        mov [rbx], rax
+        mov [rbx], eax
         
-        psrldq xmm0, 4
-        movq rax, xmm0
+        shr rax, 32
         mov [rbx + 4], ax
 
 

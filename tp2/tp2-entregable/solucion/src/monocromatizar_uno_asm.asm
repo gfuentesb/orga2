@@ -112,10 +112,9 @@ loop_y:
         packuswb xmm0, xmm3
 
         movq rax, xmm0
-        mov [rbx], rax
+        mov [rbx], eax
         
-        psrldq xmm0, 4
-        movq rax, xmm0
+        shr rax, 32
         mov [rbx + 4], ax
 
         add x, 6
@@ -150,7 +149,7 @@ end_loop_x:
     
 process_remainding_pixels:     
     mov rdx, pixels_remainding
-    sub DWORD x, 6
+    sub x, 6
     add x, rdx
     
     jmp loop_x
