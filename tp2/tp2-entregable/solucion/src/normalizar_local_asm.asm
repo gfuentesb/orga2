@@ -8,9 +8,10 @@
 
 global normalizar_local_asm
 
-section .data:
 
-uno_mask: db 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+section .data
+
+    uno_mask: dd 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF
 
 %define src r10
 %define dst r11
@@ -19,7 +20,7 @@ uno_mask: db 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0
 %define row_size r14
 %define pixels_remaining r15
 
-section .text:
+section .text
 
 normalizar_local_asm:
     push rbp
@@ -34,8 +35,8 @@ normalizar_local_asm:
     
     mov src, rdi
     mov dst, rsi
-    mov m, rdx
-    mov n, rcx
+    mov m, rcx
+    mov n, rdx
     mov row_size, r8
     xor pixels_remaining, pixels_remaining
 
@@ -78,7 +79,7 @@ normalizar_local_asm:
 
             ; Tomamos el máximo y el mínimo de las columnas de medio
             ; en xmm15 queda el maximo, en xmm14 queda el minimo
-            movdqa xmm15, [uno_mask]
+            movdqu xmm15, [uno_mask]
 
             pmaxub xmm15, xmm0
             movdqa xmm14, xmm0
@@ -210,7 +211,7 @@ normalizar_local_asm:
             ; en este punto, rdi es igual a m, y hay entre 1 y 13 píxeles por procesar
             cmp rcx, 0
             je .fin_process_remaining
-            sub rdi, 14
+            sub rdi, 15
             add rdi, pixels_remaining
             xor rcx, rcx            
             jmp .loop_x
