@@ -1,0 +1,56 @@
+\documentclass[10pt, a4paper]{article}
+\usepackage[paper=a4paper, left=1.5cm, right=1.5cm, bottom=1.5cm, top=3.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{latexsym}
+\usepackage{lastpage}
+\usepackage{calc}
+\usepackage{caratula}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+
+
+\titulo{Trabajo Práctico 2\\SIMD}
+\fecha{02 / 10 / 2012}
+\materia{Organización del Computador II}
+\grupo{Grupo KM 20}
+\integrante{Fuentes Bahamondes, Gonzalo Guillermo}{412/10}{ness00@gmail.com}
+\integrante{Marquez, Matías}{703/08}{sir.incognita@gmail.com}
+\integrante{Vanotti, Marco}{229/10}{mvanotti@dc.uba.ar}
+
+\def\contentsname{Índice}
+
+\begin{document} 
+
+    \maketitle
+
+    \tableofcontents
+
+    \pagestyle{fancy}
+    \lhead{Fuentes Bahamondes, Marquez, Vanotti}
+    \rhead{Orga 2 - SIMD}
+
+    \newpage
+
+    \section{Introducción}
+
+    \section{Desarrollo}
+    
+        \input{filtros/monocromatizar_uno} \newpage
+        \input{filtros/monocromatizar_inf} \newpage
+        \input{filtros/combinar} \newpage
+        \input{filtros/normalizar} \newpage
+        \input{filtros/pixelar} \newpage
+        \input{filtros/recortar} \newpage
+        \input{filtros/ondas} \newpage
+
+
+    \section{Conclusión}
+    
+        A pesar de la mayor dificultad para implementar y pensar como trabajar con vectores utilizando SIMD, la diferencia de performance no es para nada despreciable por lo que vale la pena para este tipo de aplicaciones, donde se realiza numerosas veces la misma aritmética.
+        
+\end{document}
+
