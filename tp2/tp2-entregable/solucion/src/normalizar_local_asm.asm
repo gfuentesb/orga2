@@ -69,11 +69,129 @@ normalizar_local_asm:
             movdqu xmm2, [src + rdi]
             sub src, row_size
 
+            ; Tomamos el máximo y el mínimo de las columnas de medio
+            ; en xmm15 queda el maximo, en xmm14 queda el minimo
+            movdqa xmm15, xmm0
+            movdqa xmm14, xmm0
 
-            ;se procesa.
+            pmaxub xmm15, xmm1
+            pminub xmm14, xmm1
+            pmaxub xmm15, xmm2
+            pminub xmm14, xmm2            
 
-            psrldq xmm1, 1
-            movdqu [dst + rdi], xmm1
+            ; Tomamos el maximo y el minimo de las columnas de los costados, fila 0
+            movdqa xmm4, xmm0
+            movdqa xmm5, xmm0
+            psrldq xmm4, 1
+            pslldq xmm5, 1
+
+            pmaxub xmm15, xmm4
+            pminub xmm14, xmm4
+
+            pmaxub xmm15, xmm5
+            pminub xmm14, xmm5
+
+            ; Tomamos el maximo y el minimo de las columnas de los costados, fila 1
+            movdqa xmm4, xmm1
+            movdqa xmm5, xmm1
+
+            psrldq xmm4, 1
+            pslldq xmm5, 1
+
+            pmaxub xmm15, xmm4
+            pminub xmm14, xmm4
+
+            pmaxub xmm15, xmm5
+            pminub xmm14, xmm5
+
+            ; Tomamos el maximo y el minimo de las columnas de los costados, fila 2
+            movdqa xmm4, xmm2
+            movdqa xmm5, xmm2
+
+            psrldq xmm4, 1
+            pslldq xmm5, 1
+
+            pmaxub xmm15, xmm4
+            pminub xmm14, xmm4
+
+            pmaxub xmm15, xmm5
+            pminub xmm14, xmm5
+
+            ; realizamos xmm1/xmm7
+            ; desempaquetamos xmm1 a xmm2, 3, 4 y 5. La parte mas baja en 2 creciendo   
+            ; de byte a word       
+            pxor xmm0, xmm0
+
+            movdqa xmm2, xmm1
+            movdqa xmm4, xmm1
+            
+            punpcklbw xmm2, xmm0
+            punpckhbw xmm4, xmm0
+
+            ;de word a dword
+            
+            movdqa xmm3, xmm2
+            movdqa xmm5, xmm3
+
+            punpckhwd xmm3,xmm0
+            punpcklwd xmm2,xmm0
+
+            punpckhwd xmm5,xmm0
+            punpcklwd xmm4,xmm0
+
+            ; casteamos a float
+            cvtdq2ps xmm2, xmm2
+            cvtdq2ps xmm3, xmm3
+            cvtdq2ps xmm4, xmm4
+            cvtdq2ps xmm5, xmm5
+
+            ; desempaquetamos xmm15 a xmm6, 7 8 y 9, la mas baja en 6, creciendo
+            ; de byte a word            
+            movdqa xmm6, xmm15
+            movdqa xmm8, xmm15
+
+            punpcklbw xmm6, xmm0
+            punpckhbw xmm8, xmm0
+
+            ; de word a dword
+            movdqa xmm7, xmm6
+            movdqa xmm9, xmm8
+
+            punpckhwd xmm7, xmm0
+            punpcklwd xmm6, xmm0
+
+            punpckhwd xmm9, xmm0
+            punpcklwd xmm8, xmm0
+
+            ; casteamos a float
+            cvtdq2ps xmm6, xmm6
+            cvtdq2ps xmm7, xmm7
+            cvtdq2ps xmm8, xmm8
+            cvtdq2ps xmm9, xmm9
+
+            ; dividimos.. 2 por 6, 3 7, 4 8, 5 9
+            divps xmm2, xmm6
+            divps xmm3, xmm7
+            divps xmm4, xmm8
+            divps xmm5, xmm9
+
+            ; casteamos a packed dwords
+            cvtps2dq xmm2, xmm2
+            cvtps2dq xmm3, xmm3
+            cvtps2dq xmm4, xmm4
+            cvtps2dq xmm5, xmm5
+
+            ; empaquetamos de dword a word..
+            packusdw xmm2, xmm3
+            packusdw xmm4, xmm5
+
+            packuswb xmm2, xmm4
+
+            ; sumamos xmm6 que tiene el mínimo
+            paddusb xmm2, xmm14
+
+            psrldq xmm2, 1
+            movdqu [dst + rdi], xmm2
 
             add rdi, 14
             cmp rdi, m
