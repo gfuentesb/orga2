@@ -7,8 +7,8 @@ static inline unsigned char saturar(unsigned int x) {
 void normalizar_local_c (
 	unsigned char *src,
 	unsigned char *dst,
-	int m,
 	int n,
+	int m,
 	int row_size
 ) {
     dst += row_size;
@@ -18,7 +18,7 @@ void normalizar_local_c (
         for (int j = 1; j < m - 1; j++) {
             unsigned char *t = &(src[j]) - row_size;
             unsigned char minVal = 255;
-            unsigned char maxVal = 0;
+            unsigned char maxVal = 1; /* No podemos dividir por 0 */
 
             for (int k = 0; k < 3; k++) {
                 for (int l = -1; l < 2; l++) {

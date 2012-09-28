@@ -8,12 +8,18 @@
 
 global normalizar_local_asm
 
+section .data:
+
+uno_mask: db 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+
 %define src r10
 %define dst r11
 %define m r12
 %define n r13
 %define row_size r14
 %define pixels_remaining r15
+
+section .text:
 
 normalizar_local_asm:
     push rbp
@@ -55,6 +61,7 @@ normalizar_local_asm:
 .fin_if: 
 
     xor rax, rax
+    inc rax
     .loop_y:
 
         xor rdi, rdi
@@ -71,7 +78,9 @@ normalizar_local_asm:
 
             ; Tomamos el máximo y el mínimo de las columnas de medio
             ; en xmm15 queda el maximo, en xmm14 queda el minimo
-            movdqa xmm15, xmm0
+            movdqa xmm15, [uno_mask]
+
+            pmaxub xmm15, xmm0
             movdqa xmm14, xmm0
 
             pmaxub xmm15, xmm1
